@@ -161,6 +161,18 @@
     white-space: pre-wrap;
     min-height: 40px;
   }
+  textarea.output {
+    width: 100%;
+    display: block;
+    font-family: inherit;
+    color: var(--ink);
+    resize: vertical;
+  }
+  textarea.output:focus {
+    outline: none;
+    border-color: var(--amber);
+  }
+  textarea.output::placeholder { color: var(--ink-soft); }
   .grid-obj { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 4px; }
   .obj-btn {
     text-align: left;
@@ -305,7 +317,7 @@
       <button class="primary" onclick="runScriptGenerator()">Buat pesan</button>
     </div>
 
-    <div class="output" id="sOutput">Pesan akan muncul di sini.</div>
+    <textarea class="output" id="sOutput" rows="6" placeholder="Pesan akan muncul di sini."></textarea>
     <div class="actions">
       <button class="ghost" onclick="copyText('sOutput')">Copy</button>
       <button class="wa" onclick="sendScriptWa()">Kirim via WA</button>
@@ -411,7 +423,7 @@
 
     <div class="grid-obj" id="objGrid"></div>
 
-    <div class="output" id="oOutput">Pilih salah satu keberatan di atas.</div>
+    <textarea class="output" id="oOutput" rows="5" placeholder="Pilih salah satu keberatan di atas."></textarea>
     <div class="actions">
       <button class="ghost" onclick="copyText('oOutput')">Copy</button>
       <button class="wa" onclick="sendWaFromOutput('oOutput')">Kirim via WA</button>
@@ -441,7 +453,7 @@
       <button class="primary" onclick="runBroadcast()">Buat pesan</button>
     </div>
 
-    <div class="output" id="bOutput">Pesan akan muncul di sini.</div>
+    <textarea class="output" id="bOutput" rows="5" placeholder="Pesan akan muncul di sini."></textarea>
     <div class="actions">
       <button class="ghost" onclick="copyText('bOutput')">Copy</button>
     </div>
@@ -501,20 +513,20 @@
     nurture: n => `Halo ${n || ''}, lama juga ya kita gak sempat ngobrol`.replace('  ', ' ')
   };
   const closings = {
-    h1: 'Kalau ada yang mau ditanyakan lagi, saya siap bantu ya.',
+    h1: 'Kalau ada yang mau ditanyain lagi, Thendri siap bantu ya.',
     h3: 'Semoga infonya membantu 🙏',
-    h7: 'Gak masalah kalau perlu waktu lebih, saya siap bantu kapan pun dibutuhkan.',
-    nurture: 'Kalau nanti butuh info promo terbaru, boleh saya kabari ya?'
+    h7: 'Gak masalah kalau perlu waktu lebih, Thendri siap bantu kapan pun dibutuhkan.',
+    nurture: 'Kalau nanti butuh info promo terbaru, boleh Thendri kabarin ya?'
   };
   const bodies = {
-    baru: u => `Terima kasih sudah tertarik dengan ${u || 'unit yang ditanyakan'}. Biar saya bisa bantu lebih tepat, boleh tahu rencananya untuk ditinggali sendiri atau investasi?`,
-    bertanya: u => `Kemarin sempat tanya soal ${u || 'unitnya'}. Mau saya kirimkan simulasi cicilan KPR-nya biar lebih kebayang?`,
-    ghosting: u => `Gak masalah kalau masih perlu waktu untuk mikir-mikir. Kalau nanti butuh info promo terbaru soal ${u || 'unitnya'}, boleh saya kabari?`,
-    site_visit: u => `Terima kasih sudah sempat site visit ${u || 'unitnya'} kemarin. Ada bagian yang paling berkesan, atau masih ada yang ingin ditanyakan?`,
-    booking: u => `Terima kasih sudah booking ${u || 'unitnya'}! Untuk proses selanjutnya, boleh saya bantu jadwalkan pembayaran DP-nya?`,
-    banding: u => `Saya paham lagi membandingkan beberapa pilihan untuk ${u || 'unit ini'}. Ada hal spesifik yang masih jadi pertimbangan, harga, lokasi, atau yang lain?`,
-    investor: u => `Untuk ${u || 'unit yang didiskusikan'}, mau saya kirimkan simulasi ROI dan rental yield-nya?`,
-    end_user: u => `Untuk ${u || 'unit ini'}, mau saya ceritakan sedikit soal fasilitas dan lingkungan sekitarnya?`
+    baru: u => `Perkenalkan, Thendri di sini, Property Consultant di CitraLand Megah Batam. Izin chat ya, semoga gak ganggu waktunya.${u ? ` Thendri hubungi karena lihat ada ketertarikan di ${u}.` : ` Thendri hubungi mau bantu kasih info seputar hunian di CitraLand Megah Batam, siapa tahu relevan sama rencana ke depannya.`} Kalau memang belum ada rencana dalam waktu dekat, gak masalah sama sekali 🙏 Tapi kalau kebetulan lagi ada kebutuhan, boleh Thendri bantu infoin?`,
+    bertanya: u => `Kemarin sempat nanya-nanya soal ${u || 'unitnya'} nih. Kalau masih tahap cari-cari info aja, santai, gak perlu buru-buru 🙏 Tapi kalau mau, Thendri bisa bantu kirimin simulasi cicilannya biar lebih kebayang — boleh?`,
+    ghosting: u => `Santai aja kalau masih perlu waktu buat mikir-mikir, gak masalah kok 🙏 Kalau nanti butuh info promo terbaru soal ${u || 'unitnya'}, boleh Thendri kabarin?`,
+    site_visit: u => `Makasih banyak udah sempetin site visit ${u || 'unitnya'} kemarin ya. Kalau ada yang masih pengen ditanyain, boleh banget langsung chat Thendri ya 🙏`,
+    booking: u => `Makasih banyak udah booking ${u || 'unitnya'} ya! 🎉 Untuk proses selanjutnya, boleh Thendri bantu jadwalin pembayaran DP-nya?`,
+    banding: u => `Wajar banget kalau masih bandingin beberapa pilihan buat ${u || 'unitnya'}, santai aja gak masalah 🙏 Kalau boleh tahu, ada hal spesifik yang masih jadi pertimbangan — harga, lokasi, atau yang lain?`,
+    investor: u => `Untuk ${u || 'unitnya'} dari sisi investasi, kalau berkenan Thendri bisa kirimin simulasi ROI dan rental yield terbarunya — boleh?`,
+    end_user: u => `Untuk ${u || 'unitnya'} yang rencananya buat ditinggalin sendiri, kalau mau Thendri ceritain sedikit soal fasilitas dan suasana lingkungannya — boleh?`
   };
   const statusLabel = {
     baru: 'Lead Baru', bertanya: 'Sudah Bertanya', ghosting: 'Ghosting',
@@ -537,13 +549,14 @@
     const stage = document.getElementById('sStage').value;
     const unit = document.getElementById('sUnit').value;
     const note = document.getElementById('sNote').value.trim();
-    document.getElementById('sOutput').textContent = buildMessage(status, stage, nama, unit, note);
+    document.getElementById('sOutput').value = buildMessage(status, stage, nama, unit, note);
   }
 
   // ---------- Copy / WA helpers ----------
   function copyText(elId) {
-    const text = document.getElementById(elId).textContent;
-    if (!text || text.includes('akan muncul di sini') || text.includes('Pilih salah satu')) return;
+    const el = document.getElementById(elId);
+    const text = ('value' in el) ? el.value : el.textContent;
+    if (!text || !text.trim()) return;
     try {
       navigator.clipboard.writeText(text).then(() => showToast('Disalin ke clipboard'));
     } catch (e) {
@@ -551,8 +564,9 @@
     }
   }
   function sendWaFromOutput(elId) {
-    const text = document.getElementById(elId).textContent;
-    if (!text || text.includes('akan muncul di sini') || text.includes('Pilih salah satu')) return;
+    const el = document.getElementById(elId);
+    const text = ('value' in el) ? el.value : el.textContent;
+    if (!text || !text.trim()) return;
     openWa(text, '');
   }
   function openWa(text, phone) {
@@ -568,8 +582,8 @@
     window.open(url, '_blank');
   }
   function sendScriptWa() {
-    const text = document.getElementById('sOutput').textContent;
-    if (!text || text.includes('akan muncul di sini')) return;
+    const text = document.getElementById('sOutput').value;
+    if (!text || !text.trim()) return;
     openWa(text, document.getElementById('sPhone').value);
   }
   function refreshLeadPicker() {
@@ -630,7 +644,7 @@
       document.querySelectorAll('.obj-btn').forEach(x => x.classList.remove('active'));
       b.classList.add('active');
       const nama = document.getElementById('oNama').value.trim();
-      document.getElementById('oOutput').textContent = objections[key](nama);
+      document.getElementById('oOutput').value = objections[key](nama);
     };
     objGrid.appendChild(b);
   });
@@ -653,7 +667,7 @@
   function runBroadcast() {
     const seg = document.getElementById('bSegmen').value;
     const tema = document.getElementById('bTema').value;
-    document.getElementById('bOutput').textContent = broadcasts[seg][tema];
+    document.getElementById('bOutput').value = broadcasts[seg][tema];
   }
 
   // ---------- Supabase connection ----------
