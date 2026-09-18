@@ -945,6 +945,7 @@
       writeAddLead({ nama, telp, tanggal, status, unit, catatan, archived: false });
       showToast('Lead disimpan');
     }
+    if (currentView !== 'active') setView('active');
     clearLeadForm();
   }
   function editLead(id) {
