@@ -310,12 +310,244 @@
   @media (max-width: 380px) {
     .grid-obj { grid-template-columns: 1fr; }
   }
+
+  /* ===== Modern visual refresh — mobile-first ===== */
+  :root {
+    --radius: 14px;
+    --radius-sm: 10px;
+    --shadow-sm: 0 2px 8px rgba(28, 43, 58, 0.06);
+    --shadow-md: 0 10px 30px rgba(28, 43, 58, 0.10);
+    --focus: 0 0 0 3px rgba(201, 130, 42, 0.22);
+  }
+  body {
+    background:
+      radial-gradient(circle at top right, rgba(201, 130, 42, 0.09), transparent 28rem),
+      var(--cream);
+    line-height: 1.5;
+  }
+  header.top {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  }
+  header.top h1 {
+    font-size: 19px;
+    letter-spacing: -0.02em;
+  }
+  header.top p {
+    margin-top: 7px;
+    opacity: 0.84;
+  }
+  nav.tabs {
+    position: sticky;
+    top: 70px;
+    z-index: 19;
+    background: rgba(28, 43, 58, 0.96);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  }
+  nav.tabs button {
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    transition: 0.2s ease;
+  }
+  nav.tabs button:hover {
+    background: #3a5269;
+    transform: translateY(-1px);
+  }
+  nav.tabs button.active {
+    box-shadow: 0 4px 12px rgba(201, 130, 42, 0.35);
+  }
+  nav.tabs button span {
+    margin-right: 4px;
+    font-size: 13px;
+  }
+  .panel {
+    border-top-width: 4px;
+    border-radius: var(--radius);
+    padding: 20px 17px 20px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .panel:hover {
+    box-shadow: var(--shadow-md);
+  }
+  .panel h2 {
+    font-size: 17px;
+    letter-spacing: -0.015em;
+  }
+  .panel .sub {
+    font-size: 13px;
+  }
+  select,
+  input[type=text],
+  input[type=tel],
+  input[type=date],
+  textarea {
+    min-height: 44px;
+    border-radius: var(--radius-sm);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  textarea { min-height: 88px; }
+  select:focus,
+  input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--amber);
+    box-shadow: var(--focus);
+  }
+  button.primary,
+  button.wa,
+  button.ghost,
+  button.danger {
+    min-height: 42px;
+    border-radius: var(--radius-sm);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  }
+  button.primary:hover,
+  button.wa:hover,
+  button.ghost:hover,
+  button.danger:hover {
+    transform: translateY(-1px);
+  }
+  button.primary:hover {
+    background: var(--navy-2);
+    box-shadow: 0 5px 14px rgba(28, 43, 58, 0.18);
+  }
+  button.ghost:hover {
+    background: var(--cream);
+    border-color: var(--amber);
+  }
+  button:focus-visible,
+  a:focus-visible {
+    outline: none;
+    box-shadow: var(--focus);
+  }
+  .actions { gap: 10px; }
+  .output {
+    min-height: 110px;
+    border-radius: var(--radius-sm);
+  }
+  .lead-card {
+    border-radius: var(--radius-sm);
+    padding: 15px;
+    background: color-mix(in srgb, var(--panel) 92%, var(--cream));
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .lead-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+  .lead-name { font-size: 15px; }
+  .lead-actions button { border-radius: 8px; }
+  .followup-banner {
+    border-radius: var(--radius-sm);
+    padding: 13px 15px;
+    box-shadow: var(--shadow-sm);
+  }
+  .hub-link {
+    border-radius: var(--radius-sm);
+    padding: 15px;
+    background: color-mix(in srgb, var(--panel) 92%, var(--cream));
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .hub-link:hover {
+    border-color: var(--amber);
+    transform: translateY(-2px);
+  }
+  #lockScreen {
+    background:
+      radial-gradient(circle at top, rgba(201, 130, 42, 0.13), transparent 26rem),
+      var(--cream);
+  }
+  #lockScreen h2 {
+    font-size: 21px;
+    letter-spacing: -0.02em;
+  }
+  .app-logo {
+    width: 92px;
+    height: 92px;
+    margin: 0 0 15px;
+    filter: drop-shadow(0 10px 18px rgba(28, 43, 58, 0.18));
+  }
+  .app-logo-mark {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .app-logo-caption {
+    margin: -8px 0 17px;
+    color: var(--ink-soft);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .toast {
+    bottom: 24px;
+    padding: 11px 18px;
+    box-shadow: var(--shadow-md);
+  }
+  .header-stats {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .header-stats > div {
+    min-width: 108px;
+    padding: 9px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .header-stats strong,
+  .header-stats span { display: block; }
+  .header-stats strong { font-size: 18px; }
+  .header-stats span {
+    margin-top: 2px;
+    color: #c7ccd2;
+    font-size: 11px;
+  }
+  .phone-validation {
+    min-height: 18px;
+    margin-top: 5px;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+  }
+  .phone-validation.valid { color: var(--green-dark); }
+  .phone-validation.invalid { color: var(--danger); }
+  @media (max-width: 380px) {
+    .header-stats > div { min-width: 0; flex: 1; }
+  }
+
 </style>
 </head>
 <body>
 
 <div id="lockScreen">
-  <h2>🔒 WA Follow-Up Assistant</h2>
+  <div class="app-logo" aria-label="Logo WA Follow-Up Assistant" role="img">
+    <svg class="app-logo-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="logoBg" x1="16" y1="12" x2="105" y2="108" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#34495F"/>
+          <stop offset="1" stop-color="#1C2B3A"/>
+        </linearGradient>
+        <linearGradient id="logoAccent" x1="32" y1="25" x2="88" y2="91" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#F0B65A"/>
+          <stop offset="1" stop-color="#C9822A"/>
+        </linearGradient>
+      </defs>
+      <circle cx="60" cy="60" r="56" fill="url(#logoBg)"/>
+      <circle cx="60" cy="60" r="55" fill="none" stroke="#F6F3EC" stroke-opacity=".18" stroke-width="2"/>
+      <path d="M29 43.5C29 35.5 35.5 29 43.5 29h33C84.5 29 91 35.5 91 43.5v22C91 73.5 84.5 80 76.5 80H59l-14.5 11V80h-1C35.5 80 29 73.5 29 65.5v-22Z" fill="url(#logoAccent)"/>
+      <path d="M42 51.5c4.8-5.2 10.8-7.8 18-7.8 7.2 0 13.2 2.6 18 7.8" fill="none" stroke="#1C2B3A" stroke-linecap="round" stroke-width="5"/>
+      <path d="m43 61 7.5 7.5L69 50" fill="none" stroke="#F6F3EC" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
+      <circle cx="82" cy="30" r="12" fill="#1E9E56" stroke="#F6F3EC" stroke-width="3"/>
+      <path d="m76.5 30 3.6 3.6 7-7.2" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8"/>
+    </svg>
+  </div>
+  <h2>WA Follow-Up Assistant</h2>
   <p>Masukkan password untuk membuka</p>
   <div style="position:relative; width:260px;">
     <input type="password" id="lockInput" placeholder="Password" style="width:260px; box-sizing:border-box; padding-right:40px; letter-spacing:normal; font-size:14px;" onkeydown="if(event.key==='Enter') tryUnlock()">
@@ -335,15 +567,19 @@
 <header class="top">
   <h1>WA Follow-Up Assistant</h1>
   <p>Alat bantu follow-up konsumen — CitraLand Megah Batam</p>
+  <div class="header-stats" aria-label="Ringkasan tracker">
+    <div><strong id="headerActiveCount">0</strong><span>Lead aktif</span></div>
+    <div><strong id="headerFollowupCount">0</strong><span>Perlu follow-up</span></div>
+  </div>
 </header>
 
 <nav class="tabs" id="tabNav">
-  <button data-tab="script" class="active">Script Generator</button>
-  <button data-tab="tracker">Follow-Up Tracker</button>
-  <button data-tab="import">Import Data</button>
-  <button data-tab="objection">Objection Handling</button>
-  <button data-tab="broadcast">Broadcast</button>
-  <button data-tab="hub">Hub Link</button>
+  <button data-tab="script" class="active"><span aria-hidden="true">✦</span>Script</button>
+  <button data-tab="tracker"><span aria-hidden="true">◉</span>Tracker</button>
+  <button data-tab="import"><span aria-hidden="true">↓</span>Import</button>
+  <button data-tab="objection"><span aria-hidden="true">?</span>Objection</button>
+  <button data-tab="broadcast"><span aria-hidden="true">↗</span>Broadcast</button>
+  <button data-tab="hub"><span aria-hidden="true">⌂</span>Hub</button>
 </nav>
 
 <main>
@@ -403,6 +639,7 @@
 
     <div class="actions">
       <button class="primary" onclick="runScriptGenerator()">Buat pesan</button>
+      <button class="ghost" onclick="resetScriptForm()">Reset</button>
     </div>
 
     <textarea class="output" id="sOutput" rows="6" placeholder="Pesan akan muncul di sini."></textarea>
@@ -424,7 +661,8 @@
     <div class="row2">
       <div>
         <label>No. WA</label>
-        <input type="tel" id="tTelp" placeholder="08xxxxxxxxxx">
+          <input type="tel" id="tTelp" placeholder="08xxxxxxxxxx atau +kode negara" oninput="previewPhoneValidation()">
+          <div id="phoneValidation" class="phone-validation" aria-live="polite"></div>
       </div>
       <div>
         <label>Kontak terakhir</label>
@@ -492,10 +730,23 @@
     <div id="leadPagination" class="pagination"></div>
 
     <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--line);">
-      <label style="margin-top:0;">Export ke Google Sheets</label>
-      <p class="sub" style="margin-top:-6px;">Unduh semua lead di tracker sebagai CSV, lalu upload/paste ke Google Sheets kamu kapan saja.</p>
+      <label style="margin-top:0;">Laporan &amp; Export</label>
+      <p class="sub" style="margin-top:-6px;">Unduh data tracker untuk laporan harian atau lanjutkan pengolahan di Google Sheets.</p>
+      <div class="row2">
+        <div>
+          <label>Tanggal mulai</label>
+          <input type="date" id="reportStartDate">
+        </div>
+        <div>
+          <label>Tanggal sampai</label>
+          <input type="date" id="reportEndDate">
+        </div>
+      </div>
+      <p class="sub" style="margin:8px 0 0;">Kosongkan kedua tanggal untuk export semua data. Nomor <strong>08...</strong> otomatis dianggap Indonesia (+62). Untuk negara lain, gunakan format <strong>+kode negara</strong> atau <strong>00kode negara</strong>, misalnya +60123456789.</p>
       <div class="actions">
         <button class="primary" onclick="exportCsv()">Export CSV</button>
+        <button class="primary" onclick="exportExcel()">Export Excel</button>
+        <button class="ghost" onclick="exportDailyPdf()">Cetak / PDF</button>
       </div>
     </div>
   </section>
@@ -586,7 +837,7 @@
         <div class="t">KPR Simulator</div>
         <div class="d">simulasikpr.vercel.app</div>
       </div>
-      <button class="ghost" onclick="window.open('https://simulasikpr.vercel.app','_blank')">Buka</button>
+      <button class="ghost" onclick="window.open('https://simulasikpr.vercel.app','_blank','noopener,noreferrer')">Buka</button>
     </div>
 
     <div class="hub-link">
@@ -594,7 +845,7 @@
         <div class="t">WhatsApp Business</div>
         <div class="d">082283120060</div>
       </div>
-      <button class="ghost" onclick="window.open('https://wa.me/6282283120060','_blank')">Buka</button>
+      <button class="ghost" onclick="window.open('https://wa.me/6282283120060','_blank','noopener,noreferrer')">Buka</button>
     </div>
 
     <label style="margin-top:16px;">Link Taplink (isi sendiri, tersimpan di HP ini)</label>
@@ -732,14 +983,29 @@
     const note = document.getElementById('sNote').value.trim();
     document.getElementById('sOutput').value = buildMessage(status, stage, nama, unit, note);
   }
+  function resetScriptForm() {
+    document.getElementById('sLeadPick').value = '';
+    document.getElementById('sPhone').value = '';
+    document.getElementById('sNama').value = '';
+    document.getElementById('sStatus').value = 'baru';
+    document.getElementById('sStage').value = 'h1';
+    document.getElementById('sUnit').value = '';
+    document.getElementById('sNote').value = '';
+    document.getElementById('sOutput').value = '';
+    showToast('Form script direset');
+  }
 
   // ---------- Copy / WA helpers ----------
-  function copyText(elId) {
+  async function copyText(elId) {
     const el = document.getElementById(elId);
     const text = ('value' in el) ? el.value : el.textContent;
-    if (!text || !text.trim()) return;
+    if (!text || !text.trim()) {
+      showToast('Belum ada teks untuk disalin');
+      return;
+    }
     try {
-      navigator.clipboard.writeText(text).then(() => showToast('Disalin ke clipboard'));
+      await navigator.clipboard.writeText(text);
+      showToast('Disalin ke clipboard');
     } catch (e) {
       showToast('Gagal menyalin — salin manual');
     }
@@ -753,14 +1019,13 @@
   function openWa(text, phone) {
     let url;
     if (phone) {
-      let p = phone.replace(/\D/g, '');
-      if (p.startsWith('0')) p = '62' + p.slice(1);
-      else if (!p.startsWith('62')) p = '62' + p;
+      const p = phoneForWhatsApp(phone);
+      if (!p) { showToast('Nomor WhatsApp belum tersedia'); return; }
       url = 'https://wa.me/' + p + '?text=' + encodeURIComponent(text);
     } else {
       url = 'https://wa.me/?text=' + encodeURIComponent(text);
     }
-    window.open(url, '_blank');
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
   function sendScriptWa() {
     const text = document.getElementById('sOutput').value;
@@ -865,7 +1130,11 @@
   let currentPage = 1;
   const PAGE_SIZE = 50;
 
-  function todayStr() { return new Date().toISOString().slice(0,10); }
+  function todayStr() {
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 10);
+  }
   function daysSince(dateStr) {
     if (!dateStr) return 0;
     const d1 = new Date(dateStr + 'T00:00:00');
@@ -880,20 +1149,59 @@
     return 'nurture';
   }
   function normalizePhone(p) {
-    let d = (p || '').replace(/\D/g, '');
-    if (d.startsWith('0')) d = '62' + d.slice(1);
-    else if (!d.startsWith('62')) d = '62' + d;
+    let raw = String(p || '').trim();
+    if (!raw) return '';
+    let d = raw.replace(/\D/g, '');
+    if (raw.startsWith('00')) return d.slice(2);
+    if (raw.startsWith('+')) return d;
+    if (d.startsWith('0')) return '62' + d.slice(1);
     return d;
+  }
+  function phoneForWhatsApp(p) {
+    return normalizePhone(p);
+  }
+  function validateWhatsAppNumber(value) {
+    const raw = String(value || '').trim();
+    const normalized = normalizePhone(raw);
+    if (!raw) return { valid: false, normalized: '', message: 'Nomor belum diisi' };
+    if (!/^\d+$/.test(normalized)) return { valid: false, normalized, message: 'Nomor hanya boleh berisi angka' };
+    if (normalized.length < 8 || normalized.length > 15) {
+      return { valid: false, normalized, message: 'Panjang nomor tidak valid' };
+    }
+    return { valid: true, normalized, message: `Format valid: ${normalized}` };
+  }
+  function previewPhoneValidation() {
+    const input = document.getElementById('tTelp');
+    const output = document.getElementById('phoneValidation');
+    if (!input || !output) return;
+    if (!input.value.trim()) {
+      output.textContent = '';
+      output.className = 'phone-validation';
+      return;
+    }
+    const result = validateWhatsAppNumber(input.value);
+    output.textContent = result.valid ? `${result.message} — belum diverifikasi di WhatsApp` : result.message;
+    output.className = `phone-validation ${result.valid ? 'valid' : 'invalid'}`;
   }
   function findDuplicate(phone, excludeId) {
     const np = normalizePhone(phone);
     return leadsCache.find(l => String(l.id) !== String(excludeId) && !l.archived && normalizePhone(l.telp) === np);
   }
 
+  function updateHeaderStats() {
+    const active = leadsCache.filter(l => !l.archived);
+    const followup = active.filter(l => stageFromDays(daysSince(l.tanggal)) !== 'nurture');
+    const activeEl = document.getElementById('headerActiveCount');
+    const followupEl = document.getElementById('headerFollowupCount');
+    if (activeEl) activeEl.textContent = active.length;
+    if (followupEl) followupEl.textContent = followup.length;
+  }
+
   async function loadLeadsFromDb() {
     const { data, error } = await sb.from(TABLE).select('*');
     if (error) { showToast('Gagal memuat data dari Supabase'); console.error(error); return; }
     leadsCache = data || [];
+    updateHeaderStats();
     renderLeads();
     refreshLeadPicker();
   }
@@ -916,6 +1224,11 @@
   function clearLeadForm() {
     document.getElementById('tNama').value = '';
     document.getElementById('tTelp').value = '';
+    const phoneValidation = document.getElementById('phoneValidation');
+    if (phoneValidation) {
+      phoneValidation.textContent = '';
+      phoneValidation.className = 'phone-validation';
+    }
     document.getElementById('tTanggal').value = '';
     document.getElementById('tCatatan').value = '';
     document.getElementById('tStatus').value = 'baru';
@@ -928,12 +1241,14 @@
   function addLead() {
     const editingId = document.getElementById('editingLeadId').value;
     const nama = document.getElementById('tNama').value.trim();
-    const telp = document.getElementById('tTelp').value.trim();
+    const phoneCheck = validateWhatsAppNumber(document.getElementById('tTelp').value);
+    const telp = phoneCheck.normalized;
     const tanggal = document.getElementById('tTanggal').value || todayStr();
     const status = document.getElementById('tStatus').value;
     const unit = document.getElementById('tUnit').value;
     const catatan = document.getElementById('tCatatan').value.trim();
-    if (!nama || !telp) { showToast('Isi nama dan no. WA dulu'); return; }
+    if (!nama) { showToast('Isi nama dan no. WA dulu'); return; }
+    if (!phoneCheck.valid) { showToast(phoneCheck.message); return; }
 
     const dup = findDuplicate(telp, editingId);
     if (dup) { showToast(`Nomor ini sudah ada di tracker atas nama ${dup.nama}`); return; }
@@ -968,7 +1283,12 @@
     writeDeleteLead(id);
   }
   function markFollowedUpToday(id) { writeUpdateLead(id, { tanggal: todayStr() }); }
-  function archiveLead(id) { writeUpdateLead(id, { archived: true }); }
+  function archiveLead(id) {
+    const lead = leadsCache.find(l => String(l.id) === String(id));
+    const name = lead ? ` atas nama ${lead.nama}` : '';
+    if (!confirm(`Tandai lead${name} sebagai tidak tertarik?`)) return;
+    writeUpdateLead(id, { archived: true });
+  }
   function unarchiveLead(id) { writeUpdateLead(id, { archived: false }); }
   function setView(view) {
     currentView = view;
@@ -982,8 +1302,7 @@
     const d = daysSince(l.tanggal);
     const stage = stageFromDays(d);
     const msg = buildMessage(l.status, stage, l.nama, l.unit, '');
-    let phone = l.telp.replace(/\D/g, '');
-    if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+    const phone = phoneForWhatsApp(l.telp);
     return 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
   }
 
@@ -1009,7 +1328,12 @@
     const search = (document.getElementById('leadSearch').value || '').toLowerCase().trim();
     const statusFilter = document.getElementById('leadFilterStatus').value;
     let leads = leadsCache.filter(l => !!l.archived === (currentView === 'archived'));
-    if (search) leads = leads.filter(l => l.nama.toLowerCase().includes(search) || (l.telp || '').includes(search));
+    if (search) leads = leads.filter(l =>
+      (l.nama || '').toLowerCase().includes(search) ||
+      (l.telp || '').includes(search) ||
+      (l.unit || '').toLowerCase().includes(search) ||
+      (l.catatan || '').toLowerCase().includes(search)
+    );
     if (statusFilter) leads = leads.filter(l => l.status === statusFilter);
 
     if (leads.length === 0) {
@@ -1088,11 +1412,11 @@
   }
   function buildCsv() {
     const header = ['Nama','No. WA','Tanggal Kontak Terakhir','Status','Tipe Unit','Catatan','Tidak Tertarik'];
-    const rows = leadsCache.map(l => [l.nama, l.telp, l.tanggal, statusLabel[l.status] || l.status, l.unit || '', l.catatan || '', l.archived ? 'Ya' : '']);
+    const rows = reportRows().map(l => [l.nama, phoneForWhatsApp(l.telp), l.tanggal, statusLabel[l.status] || l.status, l.unit || '', l.catatan || '', l.archived ? 'Ya' : '']);
     return [header, ...rows].map(r => r.map(csvEscape).join(',')).join('\n');
   }
   function exportCsv() {
-    if (leadsCache.length === 0) { showToast('Belum ada data untuk diexport'); return; }
+    if (reportRows().length === 0) { showToast('Tidak ada data pada rentang tanggal ini'); return; }
     const csv = buildCsv();
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -1105,6 +1429,79 @@
     URL.revokeObjectURL(url);
     showToast('File CSV diunduh');
   }
+  function reportDateRange() {
+    const start = document.getElementById('reportStartDate').value;
+    const end = document.getElementById('reportEndDate').value;
+    if (start && end && start > end) {
+      showToast('Tanggal mulai tidak boleh melebihi tanggal sampai');
+      return null;
+    }
+    return { start, end };
+  }
+  function reportRows() {
+    const range = reportDateRange();
+    if (!range) return [];
+    return leadsCache.filter(l => {
+      const date = l.tanggal || '';
+      return (!range.start || date >= range.start) && (!range.end || date <= range.end);
+    }).slice().sort((a, b) =>
+      String(a.nama || '').localeCompare(String(b.nama || ''), 'id')
+    );
+  }
+  function reportTableHtml() {
+    const rows = reportRows();
+    return `
+      <table>
+        <thead><tr>
+          <th>No</th><th>Nama</th><th>No. WA</th><th>Kontak Terakhir</th>
+          <th>Status</th><th>Tipe Unit</th><th>Catatan</th><th>Status Arsip</th>
+        </tr></thead>
+        <tbody>${rows.map((l, i) => `<tr>
+          <td>${i + 1}</td>
+          <td>${escapeHtml(l.nama)}</td>
+          <td>${escapeHtml(l.telp)}</td>
+          <td>${escapeHtml(l.tanggal || '-')}</td>
+          <td>${escapeHtml(statusLabel[l.status] || l.status || '-')}</td>
+          <td>${escapeHtml(l.unit || '-')}</td>
+          <td>${escapeHtml(l.catatan || '-')}</td>
+          <td>${l.archived ? 'Tidak Tertarik' : 'Aktif'}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+  }
+  function exportExcel() {
+    const rows = reportRows();
+    if (rows.length === 0) { showToast('Tidak ada data pada rentang tanggal ini'); return; }
+    const range = reportDateRange();
+    const dateLabel = range.start || range.end ? `${range.start || 'awal'}_sampai_${range.end || 'akhir'}` : todayStr();
+    const title = `Laporan WA Follow-Up — ${range.start || range.end ? `${range.start || 'awal'} s.d. ${range.end || 'akhir'}` : todayStr()}`;
+    const excelHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
+      <style>body{font-family:Arial,sans-serif}h1{font-size:18px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #999;padding:6px;text-align:left;vertical-align:top}th{background:#1C2B3A;color:#fff}</style>
+      </head><body><h1>${title}</h1>${reportTableHtml()}</body></html>`;
+    const blob = new Blob(['\ufeff', excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'laporan-wa-followup-' + dateLabel + '.xls';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('File Excel diunduh');
+  }
+  function exportDailyPdf() {
+    const rows = reportRows();
+    if (rows.length === 0) { showToast('Tidak ada data pada rentang tanggal ini'); return; }
+    const range = reportDateRange();
+    const title = `Laporan WA Follow-Up — ${range.start || range.end ? `${range.start || 'awal'} s.d. ${range.end || 'akhir'}` : todayStr()}`;
+    const win = window.open('', '_blank', 'noopener,noreferrer');
+    if (!win) { showToast('Izinkan pop-up untuk mencetak laporan'); return; }
+    win.document.write(`<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>${title}</title>
+      <style>@page{size:A4 landscape;margin:12mm}body{font-family:Arial,sans-serif;color:#222}h1{font-size:19px;margin:0 0 5px}p{font-size:11px;color:#555;margin:0 0 14px}table{border-collapse:collapse;width:100%;font-size:9px}th,td{border:1px solid #999;padding:5px;text-align:left;vertical-align:top}th{background:#1C2B3A;color:#fff}tr:nth-child(even){background:#f5f5f5}</style>
+      </head><body><h1>${title}</h1><p>Total ${rows.length} lead</p>${reportTableHtml()}</body></html>`);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 250);
+  }
 
   // ---------- Import tab ----------
   let pendingImportRows = [];
@@ -1114,13 +1511,45 @@
     if (line.split(';').length > line.split(',').length) return ';';
     return ',';
   }
+  function parseDelimitedText(text, delimiter) {
+    const rows = [];
+    let row = [];
+    let cell = '';
+    let quoted = false;
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      const next = text[i + 1];
+      if (char === '"') {
+        if (quoted && next === '"') {
+          cell += '"';
+          i++;
+        } else {
+          quoted = !quoted;
+        }
+      } else if (char === delimiter && !quoted) {
+        row.push(cell.trim());
+        cell = '';
+      } else if ((char === '\n' || char === '\r') && !quoted) {
+        if (char === '\r' && next === '\n') i++;
+        row.push(cell.trim());
+        if (row.some(value => value !== '')) rows.push(row);
+        row = [];
+        cell = '';
+      } else {
+        cell += char;
+      }
+    }
+    row.push(cell.trim());
+    if (row.some(value => value !== '')) rows.push(row);
+    return rows;
+  }
   function parseDateFlexible(s) {
-    if (!s) return new Date().toISOString().slice(0,10);
+    if (!s) return todayStr();
     s = s.trim();
     if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
     const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
     if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
-    return new Date().toISOString().slice(0,10);
+    return todayStr();
   }
   function guessStatusKey(s) {
     if (!s) return 'baru';
@@ -1139,17 +1568,18 @@
     return 'baru';
   }
   function parseTabularText(text) {
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    if (lines.length === 0) return [];
-    const delim = detectDelimiter(lines[0]);
-    let rows = lines.map(l => l.split(delim).map(c => c.trim()));
-    if (rows[0][0] && rows[0][0].toLowerCase().includes('nama')) rows = rows.slice(1);
+    text = String(text || '').replace(/^\uFEFF/, '');
+    const firstLine = text.split(/\r?\n/, 1)[0] || '';
+    if (!firstLine.trim()) return [];
+    const delim = detectDelimiter(firstLine);
+    let rows = parseDelimitedText(text, delim);
+    if (rows[0] && rows[0][0] && rows[0][0].toLowerCase().includes('nama')) rows = rows.slice(1);
     return rows.map(cols => ({
       nama: cols[0] || '',
-      telp: (cols[1] || '').replace(/[^\d+]/g, ''),
+      telp: normalizePhone(cols[1] || ''),
       tanggal: parseDateFlexible(cols[2] || ''),
       status: guessStatusKey(cols[3] || ''),
-      unit: cols[4] || ''
+      unit: (cols[4] || '').trim()
     })).filter(r => r.nama && r.telp);
   }
   function previewImport() {
@@ -1216,7 +1646,7 @@
   }
   function openTaplink() {
     const val = loadTaplink();
-    if (val) window.open(val, '_blank');
+    if (val) window.open(val, '_blank', 'noopener,noreferrer');
     else showToast('Link belum diisi');
   }
   document.getElementById('hubTaplink').value = loadTaplink();
