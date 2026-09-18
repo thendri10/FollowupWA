@@ -342,9 +342,14 @@
       var(--cream);
     line-height: 1.5;
   }
+  .app-chrome {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
   header.top {
     position: relative;
-    z-index: 20;
+    z-index: auto;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
   }
   header.top h1 {
@@ -356,8 +361,8 @@
     opacity: 0.84;
   }
   nav.tabs {
-    position: sticky;
-    top: 70px;
+    position: relative;
+    top: auto;
     z-index: 19;
     background: rgba(28, 43, 58, 0.96);
     backdrop-filter: blur(14px);
@@ -535,6 +540,14 @@
   }
   .phone-validation.valid { color: var(--green-dark); }
   .phone-validation.invalid { color: var(--danger); }
+  .report-date-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 22px;
+    align-items: end;
+  }
+  .report-date-row > div {
+    min-width: 0;
+  }
   @media (max-width: 380px) {
     .header-stats > div { min-width: 0; flex: 1; }
   }
@@ -574,7 +587,8 @@
   }
   button:disabled { opacity: 0.6; cursor: wait; transform: none !important; }
   @media (max-width: 480px) {
-    nav.tabs { top: 0; }
+    nav.tabs { position: relative; top: auto; }
+    .report-date-row { column-gap: 12px; }
     .filter-row { display: grid; grid-template-columns: 1fr; }
     .filter-row select { max-width: none !important; width: 100%; }
     .actions > button { width: 100%; }
@@ -625,6 +639,7 @@
 
 <div id="appRoot" class="hidden">
 
+<div class="app-chrome">
 <header class="top">
   <h1>WA Follow-Up Assistant</h1>
   <p>Alat bantu follow-up konsumen — CitraLand Megah Batam</p>
@@ -642,6 +657,7 @@
   <button data-tab="broadcast"><span aria-hidden="true">↗</span>Broadcast</button>
   <button data-tab="hub"><span aria-hidden="true">⌂</span>Hub</button>
 </nav>
+</div>
 
 <main>
 
@@ -794,7 +810,7 @@
     <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--line);">
       <label style="margin-top:0;">Laporan &amp; Export</label>
       <p class="sub" style="margin-top:-6px;">Unduh data tracker untuk laporan harian atau lanjutkan pengolahan di Google Sheets.</p>
-      <div class="row2">
+      <div class="row2 report-date-row">
         <div>
           <label>Tanggal mulai</label>
           <input type="date" id="reportStartDate">
