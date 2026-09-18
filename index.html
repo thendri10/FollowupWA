@@ -136,6 +136,70 @@
   }
   textarea { resize: vertical; min-height: 70px; }
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .row2 > div { min-width: 0; }
+  .tracker-contact-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
+  }
+  .tracker-contact-row input[type="date"] {
+    font-size: 11px;
+    padding-left: 7px;
+    padding-right: 22px;
+  }
+  #tTanggal {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding-right: 22px;
+  }
+  #tTanggal::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+  .date-input-wrap {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+  }
+  .date-input-wrap::after {
+    content: '';
+    position: absolute;
+    right: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 13px;
+    border: 1.5px solid var(--ink-soft);
+    border-radius: 3px;
+    background:
+      linear-gradient(var(--ink-soft), var(--ink-soft)) 0 4px / 100% 1.5px no-repeat,
+      radial-gradient(circle, var(--ink-soft) 1px, transparent 1.5px) 3px 1px / 5px 5px repeat-x;
+    pointer-events: none;
+  }
+  .date-input-wrap input[type="date"] {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 44px;
+    padding: 8px 28px 8px 8px;
+    line-height: 28px;
+    vertical-align: middle;
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .date-input-wrap input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
   button.primary, button.wa, button.ghost, button.danger {
     border: none;
     border-radius: var(--radius);
@@ -278,6 +342,52 @@
     background: var(--cream);
     color: var(--ink);
   }
+  :root[data-theme="dark"] .badge.h1,
+  :root[data-theme="dark"] .followup-banner {
+    background: #4A351F;
+    border-color: #765427;
+    color: #F4C778;
+  }
+  :root[data-theme="dark"] .badge.h3,
+  :root[data-theme="dark"] .followup-banner.zero {
+    background: #1F4030;
+    border-color: #2D6848;
+    color: #9DE0B7;
+  }
+  :root[data-theme="dark"] .badge.h7 {
+    background: #4A2925;
+    color: #F1A69B;
+  }
+  :root[data-theme="dark"] .badge.nurture,
+  :root[data-theme="dark"] .badge.archived {
+    background: #343B43;
+    color: #CBD3DB;
+  }
+  :root[data-theme="dark"] .date-input-wrap::after { color: #C9C0B0; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .badge.h1,
+    :root:not([data-theme="light"]) .followup-banner {
+      background: #4A351F;
+      border-color: #765427;
+      color: #F4C778;
+    }
+    :root:not([data-theme="light"]) .badge.h3,
+    :root:not([data-theme="light"]) .followup-banner.zero {
+      background: #1F4030;
+      border-color: #2D6848;
+      color: #9DE0B7;
+    }
+    :root:not([data-theme="light"]) .badge.h7 {
+      background: #4A2925;
+      color: #F1A69B;
+    }
+    :root:not([data-theme="light"]) .badge.nurture,
+    :root:not([data-theme="light"]) .badge.archived {
+      background: #343B43;
+      color: #CBD3DB;
+    }
+    :root:not([data-theme="light"]) .date-input-wrap::after { color: #C9C0B0; }
+  }
   #lockScreen {
     position: fixed;
     inset: 0;
@@ -410,6 +520,21 @@
     border-radius: var(--radius-sm);
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   }
+  input[type=date] {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    color: var(--ink);
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] input[type=date] {
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) input[type=date] {
+      color-scheme: dark;
+    }
+  }
   textarea { min-height: 88px; }
   select:focus,
   input:focus,
@@ -541,12 +666,24 @@
   .phone-validation.valid { color: var(--green-dark); }
   .phone-validation.invalid { color: var(--danger); }
   .report-date-row {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: 22px;
-    align-items: end;
+    grid-template-columns: minmax(0, calc(50% - 6px)) minmax(0, calc(50% - 6px));
+    column-gap: 12px;
+    width: 100%;
   }
   .report-date-row > div {
     min-width: 0;
+    width: 100%;
+  }
+  .report-date-row label {
+    margin-top: 12px;
+  }
+  .report-date-row input[type="date"] {
+    font-size: 11px;
+  }
+  .date-input-wrap input[type="date"]::-webkit-datetime-edit,
+  .date-input-wrap input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+    line-height: 28px;
   }
   @media (max-width: 380px) {
     .header-stats > div { min-width: 0; flex: 1; }
@@ -588,7 +725,10 @@
   button:disabled { opacity: 0.6; cursor: wait; transform: none !important; }
   @media (max-width: 480px) {
     nav.tabs { position: relative; top: auto; }
-    .report-date-row { column-gap: 12px; }
+    .report-date-row {
+      grid-template-columns: minmax(0, calc(50% - 5px)) minmax(0, calc(50% - 5px));
+      column-gap: 10px;
+    }
     .filter-row { display: grid; grid-template-columns: 1fr; }
     .filter-row select { max-width: none !important; width: 100%; }
     .actions > button { width: 100%; }
@@ -735,7 +875,7 @@
 
     <label>Nama</label>
     <input type="text" id="tNama" placeholder="Nama lead">
-    <div class="row2">
+    <div class="row2 tracker-contact-row">
       <div>
         <label>No. WA</label>
           <input type="tel" id="tTelp" placeholder="08xxxxxxxxxx atau +kode negara" oninput="previewPhoneValidation()">
@@ -743,7 +883,9 @@
       </div>
       <div>
         <label>Kontak terakhir</label>
-        <input type="date" id="tTanggal">
+        <div class="date-input-wrap">
+          <input type="date" id="tTanggal">
+        </div>
       </div>
     </div>
     <div class="row2">
@@ -813,11 +955,15 @@
       <div class="row2 report-date-row">
         <div>
           <label>Tanggal mulai</label>
-          <input type="date" id="reportStartDate">
+          <div class="date-input-wrap">
+            <input type="date" id="reportStartDate">
+          </div>
         </div>
         <div>
           <label>Tanggal sampai</label>
-          <input type="date" id="reportEndDate">
+          <div class="date-input-wrap">
+            <input type="date" id="reportEndDate">
+          </div>
         </div>
       </div>
       <p class="sub" style="margin:8px 0 0;">Kosongkan kedua tanggal untuk export semua data. Nomor <strong>08...</strong> otomatis dianggap Indonesia (+62). Untuk negara lain, gunakan format <strong>+kode negara</strong> atau <strong>00kode negara</strong>, misalnya +60123456789.</p>
