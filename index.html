@@ -206,9 +206,57 @@
   .badge.h3 { background: #E4EEE8; color: var(--green-dark); }
   .badge.h7 { background: #F3D9CF; color: var(--danger); }
   .badge.nurture { background: #E4E7EA; color: var(--slate); }
+  .badge.archived { background: #E4E7EA; color: var(--ink-soft); }
   .lead-actions { display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
   .lead-actions button { font-size: 12px; padding: 7px 10px; }
+  .lead-note { font-size: 12px; color: var(--ink-soft); margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); white-space: pre-wrap; }
   .empty { font-size: 13px; color: var(--ink-soft); padding: 10px 0; }
+  .followup-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #FCE9CE;
+    border: 1px solid #E9C58D;
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--amber-dark);
+    margin-top: 18px;
+    margin-bottom: 12px;
+  }
+  .followup-banner.zero { background: #E4EEE8; border-color: #BFE0CE; color: var(--green-dark); }
+  .filter-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .filter-row input[type=text] { flex: 1; }
+  .view-toggle { display: flex; gap: 6px; margin-bottom: 10px; }
+  .view-toggle button {
+    flex: 1;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 7px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .view-toggle button.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  #lockScreen {
+    position: fixed;
+    inset: 0;
+    background: var(--cream);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 24px;
+    text-align: center;
+  }
+  #lockScreen h2 { font-size: 16px; margin: 0 0 4px; }
+  #lockScreen p { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 16px; }
+  #lockScreen input { max-width: 260px; text-align: center; margin-bottom: 10px; }
+  #lockScreen .lockErr { color: var(--danger); font-size: 12px; height: 16px; margin-bottom: 6px; }
   .toast {
     position: fixed;
     bottom: 18px;
@@ -243,6 +291,16 @@
 </style>
 </head>
 <body>
+
+<div id="lockScreen">
+  <h2>🔒 WA Follow-Up Assistant</h2>
+  <p>Masukkan password untuk membuka</p>
+  <input type="password" id="lockInput" placeholder="Password" onkeydown="if(event.key==='Enter') tryUnlock()">
+  <div class="lockErr" id="lockErr"></div>
+  <button class="primary" onclick="tryUnlock()">Buka</button>
+</div>
+
+<div id="appRoot" class="hidden">
 
 <header class="top">
   <h1>WA Follow-Up Assistant</h1>
@@ -329,6 +387,8 @@
     <h2>Follow-Up Tracker</h2>
     <p class="sub">Data tersimpan di Supabase kamu sendiri — bisa dilanjutkan dari device manapun, kapan saja. Tahap follow-up dihitung otomatis dari tanggal kontak terakhir.</p>
 
+    <input type="hidden" id="editingLeadId" value="">
+
     <label>Nama</label>
     <input type="text" id="tNama" placeholder="Nama lead">
     <div class="row2">
@@ -368,8 +428,34 @@
         </select>
       </div>
     </div>
+    <label>Catatan (opsional)</label>
+    <textarea id="tCatatan" placeholder="Konteks terakhir ngobrol apa, dll"></textarea>
+
     <div class="actions">
-      <button class="primary" onclick="addLead()">Simpan lead</button>
+      <button class="primary" id="tSaveBtn" onclick="addLead()">Simpan lead</button>
+      <button class="ghost hidden" id="tCancelBtn" onclick="cancelEdit()">Batal edit</button>
+    </div>
+
+    <div id="followupBanner"></div>
+
+    <div class="view-toggle">
+      <button id="viewActiveBtn" class="active" onclick="setView('active')">Aktif</button>
+      <button id="viewArchivedBtn" onclick="setView('archived')">Tidak Tertarik</button>
+    </div>
+
+    <div class="filter-row">
+      <input type="text" id="leadSearch" placeholder="Cari nama / nomor..." oninput="renderLeads()">
+      <select id="leadFilterStatus" onchange="renderLeads()" style="max-width:150px;">
+        <option value="">Semua status</option>
+        <option value="baru">Lead Baru</option>
+        <option value="bertanya">Sudah Bertanya</option>
+        <option value="ghosting">Ghosting</option>
+        <option value="site_visit">Sudah Site Visit</option>
+        <option value="booking">Sudah Booking</option>
+        <option value="banding">Masih Membandingkan</option>
+        <option value="investor">Investor</option>
+        <option value="end_user">End User</option>
+      </select>
     </div>
 
     <div id="leadList" style="margin-top:6px;"></div>
@@ -490,9 +576,34 @@
 
 </main>
 
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
+  // ---------- Lock screen ----------
+  // Ganti password ini kapan saja kamu mau — cukup edit teks di dalam tanda kutip.
+  const APP_PASSWORD = 'CitraLand2026';
+
+  function tryUnlock() {
+    const val = document.getElementById('lockInput').value;
+    if (val === APP_PASSWORD) {
+      try { localStorage.setItem('wa_followup_unlocked', '1'); } catch (e) {}
+      document.getElementById('lockScreen').classList.add('hidden');
+      document.getElementById('appRoot').classList.remove('hidden');
+    } else {
+      document.getElementById('lockErr').textContent = 'Password salah, coba lagi.';
+    }
+  }
+  (function checkUnlock() {
+    try {
+      if (localStorage.getItem('wa_followup_unlocked') === '1') {
+        document.getElementById('lockScreen').classList.add('hidden');
+        document.getElementById('appRoot').classList.remove('hidden');
+      }
+    } catch (e) {}
+  })();
+
   // ---------- Tab switching ----------
   const tabs = document.querySelectorAll('#tabNav button');
   tabs.forEach(btn => {
@@ -590,7 +701,7 @@
     const sel = document.getElementById('sLeadPick');
     if (!sel) return;
     const current = sel.value;
-    const leads = leadsCache;
+    const leads = leadsCache.filter(l => !l.archived);
     sel.innerHTML = '<option value="">— ketik manual —</option>';
     leads.forEach(l => {
       const opt = document.createElement('option');
@@ -610,6 +721,7 @@
     document.getElementById('sPhone').value = l.telp || '';
     document.getElementById('sStatus').value = l.status;
     document.getElementById('sStage').value = stageFromDays(daysSince(l.tanggal));
+    document.getElementById('sNote').value = l.catatan || '';
   }
   function showToast(msg) {
     const t = document.getElementById('toast');
@@ -679,6 +791,7 @@
 
   // ---------- Tracker tab (Supabase-backed) ----------
   let leadsCache = [];
+  let currentView = 'active'; // 'active' | 'archived'
 
   function todayStr() { return new Date().toISOString().slice(0,10); }
   function daysSince(dateStr) {
@@ -693,6 +806,16 @@
     if (d <= 3) return 'h3';
     if (d <= 7) return 'h7';
     return 'nurture';
+  }
+  function normalizePhone(p) {
+    let d = (p || '').replace(/\D/g, '');
+    if (d.startsWith('0')) d = '62' + d.slice(1);
+    else if (!d.startsWith('62')) d = '62' + d;
+    return d;
+  }
+  function findDuplicate(phone, excludeId) {
+    const np = normalizePhone(phone);
+    return leadsCache.find(l => String(l.id) !== String(excludeId) && !l.archived && normalizePhone(l.telp) === np);
   }
 
   async function loadLeadsFromDb() {
@@ -718,21 +841,68 @@
     loadLeadsFromDb();
   }
 
+  function clearLeadForm() {
+    document.getElementById('tNama').value = '';
+    document.getElementById('tTelp').value = '';
+    document.getElementById('tTanggal').value = '';
+    document.getElementById('tCatatan').value = '';
+    document.getElementById('tStatus').value = 'baru';
+    document.getElementById('tUnit').value = '';
+    document.getElementById('editingLeadId').value = '';
+    document.getElementById('tSaveBtn').textContent = 'Simpan lead';
+    document.getElementById('tCancelBtn').classList.add('hidden');
+  }
+
   function addLead() {
+    const editingId = document.getElementById('editingLeadId').value;
     const nama = document.getElementById('tNama').value.trim();
     const telp = document.getElementById('tTelp').value.trim();
     const tanggal = document.getElementById('tTanggal').value || todayStr();
     const status = document.getElementById('tStatus').value;
     const unit = document.getElementById('tUnit').value;
+    const catatan = document.getElementById('tCatatan').value.trim();
     if (!nama || !telp) { showToast('Isi nama dan no. WA dulu'); return; }
-    writeAddLead({ nama, telp, tanggal, status, unit });
-    document.getElementById('tNama').value = '';
-    document.getElementById('tTelp').value = '';
-    document.getElementById('tTanggal').value = '';
-    showToast('Lead disimpan');
+
+    const dup = findDuplicate(telp, editingId);
+    if (dup) { showToast(`Nomor ini sudah ada di tracker atas nama ${dup.nama}`); return; }
+
+    if (editingId) {
+      writeUpdateLead(editingId, { nama, telp, tanggal, status, unit, catatan });
+      showToast('Lead diupdate');
+    } else {
+      writeAddLead({ nama, telp, tanggal, status, unit, catatan, archived: false });
+      showToast('Lead disimpan');
+    }
+    clearLeadForm();
   }
-  function deleteLead(id) { writeDeleteLead(id); }
+  function editLead(id) {
+    const l = leadsCache.find(x => String(x.id) === String(id));
+    if (!l) return;
+    document.getElementById('editingLeadId').value = l.id;
+    document.getElementById('tNama').value = l.nama;
+    document.getElementById('tTelp').value = l.telp;
+    document.getElementById('tTanggal').value = l.tanggal;
+    document.getElementById('tStatus').value = l.status;
+    document.getElementById('tUnit').value = l.unit || '';
+    document.getElementById('tCatatan').value = l.catatan || '';
+    document.getElementById('tSaveBtn').textContent = 'Update lead';
+    document.getElementById('tCancelBtn').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function cancelEdit() { clearLeadForm(); }
+  function deleteLead(id) {
+    if (!confirm('Hapus lead ini permanen? Data tidak bisa dikembalikan.')) return;
+    writeDeleteLead(id);
+  }
   function markFollowedUpToday(id) { writeUpdateLead(id, { tanggal: todayStr() }); }
+  function archiveLead(id) { writeUpdateLead(id, { archived: true }); }
+  function unarchiveLead(id) { writeUpdateLead(id, { archived: false }); }
+  function setView(view) {
+    currentView = view;
+    document.getElementById('viewActiveBtn').classList.toggle('active', view === 'active');
+    document.getElementById('viewArchivedBtn').classList.toggle('active', view === 'archived');
+    renderLeads();
+  }
 
   function waLinkFor(l) {
     const d = daysSince(l.tanggal);
@@ -742,12 +912,34 @@
     if (phone.startsWith('0')) phone = '62' + phone.slice(1);
     return 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
   }
+
+  function renderBanner() {
+    const banner = document.getElementById('followupBanner');
+    if (!banner) return;
+    const active = leadsCache.filter(l => !l.archived);
+    const due = active.filter(l => stageFromDays(daysSince(l.tanggal)) !== 'nurture').length;
+    const nurture = active.filter(l => stageFromDays(daysSince(l.tanggal)) === 'nurture').length;
+    if (due === 0) {
+      banner.className = 'followup-banner zero';
+      banner.textContent = active.length === 0 ? 'Belum ada lead aktif.' : `✅ Tidak ada yang perlu di-follow-up hari ini${nurture ? ` • ${nurture} nurture jangka panjang` : ''}.`;
+    } else {
+      banner.className = 'followup-banner';
+      banner.textContent = `🔔 ${due} lead perlu di-follow-up (H+1/H+3/H+7)${nurture ? ` • ${nurture} nurture jangka panjang` : ''}`;
+    }
+  }
+
   function renderLeads() {
-    const leads = leadsCache;
+    renderBanner();
     const list = document.getElementById('leadList');
     if (!list) return;
+    const search = (document.getElementById('leadSearch').value || '').toLowerCase().trim();
+    const statusFilter = document.getElementById('leadFilterStatus').value;
+    let leads = leadsCache.filter(l => !!l.archived === (currentView === 'archived'));
+    if (search) leads = leads.filter(l => l.nama.toLowerCase().includes(search) || (l.telp || '').includes(search));
+    if (statusFilter) leads = leads.filter(l => l.status === statusFilter);
+
     if (leads.length === 0) {
-      list.innerHTML = '<div class="empty">Belum ada lead tersimpan.</div>';
+      list.innerHTML = `<div class="empty">${currentView === 'archived' ? 'Belum ada lead yang ditandai tidak tertarik.' : 'Belum ada lead yang cocok.'}</div>`;
       return;
     }
     const sorted = leads.slice().sort((a,b) => daysSince(b.tanggal) - daysSince(a.tanggal));
@@ -757,19 +949,25 @@
       const stage = stageFromDays(d);
       const card = document.createElement('div');
       card.className = 'lead-card';
+      const badge = l.archived ? `<span class="badge archived">Tidak Tertarik</span>` : `<span class="badge ${stage}">${stageLabel[stage]}</span>`;
+      const actionButtons = l.archived
+        ? `<button class="ghost" onclick="unarchiveLead('${l.id}')">Aktifkan Lagi</button>
+           <button class="danger" onclick="deleteLead('${l.id}')">Hapus</button>`
+        : `<button class="wa" onclick="window.open('${waLinkFor(l)}','_blank')">Follow up WA</button>
+           <button class="ghost" onclick="markFollowedUpToday('${l.id}')">Tandai hari ini</button>
+           <button class="ghost" onclick="editLead('${l.id}')">Edit</button>
+           <button class="ghost" onclick="archiveLead('${l.id}')">Tidak Tertarik</button>
+           <button class="danger" onclick="deleteLead('${l.id}')">Hapus</button>`;
       card.innerHTML = `
         <div class="lead-top">
           <div>
             <div class="lead-name">${escapeHtml(l.nama)}</div>
             <div class="lead-meta">${statusLabel[l.status] || l.status}${l.unit ? ' • ' + escapeHtml(l.unit) : ''} • ${d} hari lalu</div>
           </div>
-          <span class="badge ${stage}">${stageLabel[stage]}</span>
+          ${badge}
         </div>
-        <div class="lead-actions">
-          <button class="wa" onclick="window.open('${waLinkFor(l)}','_blank')">Follow up WA</button>
-          <button class="ghost" onclick="markFollowedUpToday('${l.id}')">Tandai hari ini</button>
-          <button class="danger" onclick="deleteLead('${l.id}')">Hapus</button>
-        </div>
+        ${l.catatan ? `<div class="lead-note">📝 ${escapeHtml(l.catatan)}</div>` : ''}
+        <div class="lead-actions">${actionButtons}</div>
       `;
       list.appendChild(card);
     });
@@ -791,8 +989,8 @@
     return v;
   }
   function buildCsv() {
-    const header = ['Nama','No. WA','Tanggal Kontak Terakhir','Status','Tipe Unit'];
-    const rows = leadsCache.map(l => [l.nama, l.telp, l.tanggal, statusLabel[l.status] || l.status, l.unit || '']);
+    const header = ['Nama','No. WA','Tanggal Kontak Terakhir','Status','Tipe Unit','Catatan','Tidak Tertarik'];
+    const rows = leadsCache.map(l => [l.nama, l.telp, l.tanggal, statusLabel[l.status] || l.status, l.unit || '', l.catatan || '', l.archived ? 'Ya' : '']);
     return [header, ...rows].map(r => r.map(csvEscape).join(',')).join('\n');
   }
   function exportCsv() {
@@ -887,10 +1085,18 @@
   }
   async function commitImport() {
     if (pendingImportRows.length === 0) return;
-    const { error } = await sb.from(TABLE).insert(pendingImportRows);
-    if (error) { showToast('Gagal import ke Supabase'); console.error(error); return; }
-    loadLeadsFromDb();
-    showToast(`${pendingImportRows.length} lead diimport`);
+    const toInsert = [];
+    let skipped = 0;
+    pendingImportRows.forEach(r => {
+      if (findDuplicate(r.telp)) { skipped++; return; }
+      toInsert.push({ ...r, archived: false });
+    });
+    if (toInsert.length > 0) {
+      const { error } = await sb.from(TABLE).insert(toInsert);
+      if (error) { showToast('Gagal import ke Supabase'); console.error(error); return; }
+      loadLeadsFromDb();
+    }
+    showToast(`${toInsert.length} lead diimport${skipped ? `, ${skipped} dilewati (nomor sudah ada)` : ''}`);
     cancelImport();
     document.getElementById('impPaste').value = '';
     document.getElementById('impFile').value = '';
