@@ -241,6 +241,26 @@
     cursor: pointer;
   }
   .view-toggle button.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .pagination button {
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+    cursor: pointer;
+  }
+  .pagination button:disabled { opacity: 0.4; cursor: default; }
   #lockScreen {
     position: fixed;
     inset: 0;
@@ -295,7 +315,10 @@
 <div id="lockScreen">
   <h2>🔒 WA Follow-Up Assistant</h2>
   <p>Masukkan password untuk membuka</p>
-  <input type="password" id="lockInput" placeholder="Password" onkeydown="if(event.key==='Enter') tryUnlock()">
+  <div style="position:relative; max-width:260px; width:100%;">
+    <input type="password" id="lockInput" placeholder="Password" style="width:100%; padding-right:38px;" onkeydown="if(event.key==='Enter') tryUnlock()">
+    <button type="button" onclick="togglePasswordVisibility()" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); background:none; border:none; font-size:16px; cursor:pointer; padding:4px 6px;">👁️</button>
+  </div>
   <div class="lockErr" id="lockErr"></div>
   <button class="primary" onclick="tryUnlock()">Buka</button>
 </div>
@@ -444,8 +467,8 @@
     </div>
 
     <div class="filter-row">
-      <input type="text" id="leadSearch" placeholder="Cari nama / nomor..." oninput="renderLeads()">
-      <select id="leadFilterStatus" onchange="renderLeads()" style="max-width:150px;">
+      <input type="text" id="leadSearch" placeholder="Cari nama / nomor..." oninput="currentPage=1; renderLeads();">
+      <select id="leadFilterStatus" onchange="currentPage=1; renderLeads();" style="max-width:150px;">
         <option value="">Semua status</option>
         <option value="baru">Lead Baru</option>
         <option value="bertanya">Sudah Bertanya</option>
@@ -459,6 +482,7 @@
     </div>
 
     <div id="leadList" style="margin-top:6px;"></div>
+    <div id="leadPagination" class="pagination"></div>
 
     <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--line);">
       <label style="margin-top:0;">Export ke Google Sheets</label>
@@ -584,6 +608,11 @@
   // ---------- Lock screen ----------
   // Ganti password ini kapan saja kamu mau — cukup edit teks di dalam tanda kutip.
   const APP_PASSWORD = 'CitraLand2026';
+
+  function togglePasswordVisibility() {
+    const input = document.getElementById('lockInput');
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
 
   function tryUnlock() {
     const val = document.getElementById('lockInput').value;
@@ -792,6 +821,8 @@
   // ---------- Tracker tab (Supabase-backed) ----------
   let leadsCache = [];
   let currentView = 'active'; // 'active' | 'archived'
+  let currentPage = 1;
+  const PAGE_SIZE = 50;
 
   function todayStr() { return new Date().toISOString().slice(0,10); }
   function daysSince(dateStr) {
@@ -899,6 +930,7 @@
   function unarchiveLead(id) { writeUpdateLead(id, { archived: false }); }
   function setView(view) {
     currentView = view;
+    currentPage = 1;
     document.getElementById('viewActiveBtn').classList.toggle('active', view === 'active');
     document.getElementById('viewArchivedBtn').classList.toggle('active', view === 'archived');
     renderLeads();
@@ -940,11 +972,19 @@
 
     if (leads.length === 0) {
       list.innerHTML = `<div class="empty">${currentView === 'archived' ? 'Belum ada lead yang ditandai tidak tertarik.' : 'Belum ada lead yang cocok.'}</div>`;
+      document.getElementById('leadPagination').innerHTML = '';
       return;
     }
     const sorted = leads.slice().sort((a,b) => daysSince(b.tanggal) - daysSince(a.tanggal));
+
+    const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    const startIdx = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = sorted.slice(startIdx, startIdx + PAGE_SIZE);
+
     list.innerHTML = '';
-    sorted.forEach(l => {
+    pageItems.forEach(l => {
       const d = daysSince(l.tanggal);
       const stage = stageFromDays(d);
       const card = document.createElement('div');
@@ -971,6 +1011,22 @@
       `;
       list.appendChild(card);
     });
+    renderPagination(sorted.length, totalPages);
+  }
+  function renderPagination(total, totalPages) {
+    const el = document.getElementById('leadPagination');
+    if (!el) return;
+    if (total <= PAGE_SIZE) { el.innerHTML = ''; return; }
+    el.innerHTML = `
+      <button onclick="changePage(-1)" ${currentPage <= 1 ? 'disabled' : ''}>‹ Sebelumnya</button>
+      <span>Halaman ${currentPage} dari ${totalPages} (${total} lead)</span>
+      <button onclick="changePage(1)" ${currentPage >= totalPages ? 'disabled' : ''}>Berikutnya ›</button>
+    `;
+  }
+  function changePage(delta) {
+    currentPage += delta;
+    renderLeads();
+    document.getElementById('leadList').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   function escapeHtml(s) {
     return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
