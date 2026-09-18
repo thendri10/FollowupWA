@@ -261,6 +261,23 @@
     cursor: pointer;
   }
   .pagination button:disabled { opacity: 0.4; cursor: default; }
+  .page-jump {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .page-jump input {
+    width: 58px;
+    min-height: 34px;
+    padding: 6px 8px;
+    text-align: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--cream);
+    color: var(--ink);
+  }
   #lockScreen {
     position: fixed;
     inset: 0;
@@ -326,8 +343,7 @@
     line-height: 1.5;
   }
   header.top {
-    position: sticky;
-    top: 0;
+    position: relative;
     z-index: 20;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
   }
@@ -425,6 +441,7 @@
     box-shadow: var(--focus);
   }
   .actions { gap: 10px; }
+  main { padding-bottom: 120px; }
   .output {
     min-height: 110px;
     border-radius: var(--radius-sm);
@@ -488,6 +505,7 @@
     bottom: 24px;
     padding: 11px 18px;
     box-shadow: var(--shadow-md);
+    bottom: max(24px, env(safe-area-inset-bottom));
   }
   .header-stats {
     display: flex;
@@ -519,6 +537,49 @@
   .phone-validation.invalid { color: var(--danger); }
   @media (max-width: 380px) {
     .header-stats > div { min-width: 0; flex: 1; }
+  }
+  #loadingState {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+  #loadingState::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--line);
+    border-top-color: var(--amber);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .back-top {
+    position: fixed;
+    right: 16px;
+    bottom: max(18px, env(safe-area-inset-bottom));
+    z-index: 40;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--navy);
+    color: #fff;
+    font-size: 20px;
+    line-height: 1;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.6; cursor: wait; transform: none !important; }
+  @media (max-width: 480px) {
+    nav.tabs { top: 0; }
+    .filter-row { display: grid; grid-template-columns: 1fr; }
+    .filter-row select { max-width: none !important; width: 100%; }
+    .actions > button { width: 100%; }
+    .lead-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .lead-actions button:first-child { grid-column: 1 / -1; }
   }
 
 </style>
@@ -726,6 +787,7 @@
       </select>
     </div>
 
+    <div id="loadingState" class="empty hidden">Memuat data lead...</div>
     <div id="leadList" style="margin-top:6px;"></div>
     <div id="leadPagination" class="pagination"></div>
 
@@ -747,6 +809,7 @@
         <button class="primary" onclick="exportCsv()">Export CSV</button>
         <button class="primary" onclick="exportExcel()">Export Excel</button>
         <button class="ghost" onclick="exportDailyPdf()">Cetak / PDF</button>
+        <button class="ghost" onclick="resetReportFilter()">Reset Filter</button>
       </div>
     </div>
   </section>
@@ -869,6 +932,7 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<button id="backToTop" class="back-top hidden" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Kembali ke atas">↑</button>
 
 <script>
   // ---------- Lock screen ----------
@@ -1128,7 +1192,7 @@
   let leadsCache = [];
   let currentView = 'active'; // 'active' | 'archived'
   let currentPage = 1;
-  const PAGE_SIZE = 50;
+  const PAGE_SIZE = 25;
 
   function todayStr() {
     const now = new Date();
@@ -1162,8 +1226,14 @@
   }
   function validateWhatsAppNumber(value) {
     const raw = String(value || '').trim();
-    const normalized = normalizePhone(raw);
     if (!raw) return { valid: false, normalized: '', message: 'Nomor belum diisi' };
+    if (!/^[+]?\d[\d\s().-]*$/.test(raw) && !/^00\d[\d\s().-]*$/.test(raw)) {
+      return { valid: false, normalized: '', message: 'Nomor mengandung karakter yang tidak valid' };
+    }
+    if ((raw.match(/\+/g) || []).length > 1 || (raw.includes('+') && !raw.startsWith('+'))) {
+      return { valid: false, normalized: '', message: 'Tanda + hanya boleh berada di awal nomor' };
+    }
+    const normalized = normalizePhone(raw);
     if (!/^\d+$/.test(normalized)) return { valid: false, normalized, message: 'Nomor hanya boleh berisi angka' };
     if (normalized.length < 8 || normalized.length > 15) {
       return { valid: false, normalized, message: 'Panjang nomor tidak valid' };
@@ -1198,17 +1268,26 @@
   }
 
   async function loadLeadsFromDb() {
+    const loading = document.getElementById('loadingState');
+    if (loading) loading.classList.remove('hidden');
     const { data, error } = await sb.from(TABLE).select('*');
-    if (error) { showToast('Gagal memuat data dari Supabase'); console.error(error); return; }
+    if (error) {
+      if (loading) loading.classList.add('hidden');
+      showToast('Gagal memuat data dari Supabase');
+      console.error(error);
+      return;
+    }
     leadsCache = data || [];
     updateHeaderStats();
     renderLeads();
     refreshLeadPicker();
+    if (loading) loading.classList.add('hidden');
   }
   async function writeAddLead(data) {
     const { error } = await sb.from(TABLE).insert([data]);
-    if (error) { showToast('Gagal menyimpan ke Supabase'); console.error(error); return; }
-    loadLeadsFromDb();
+    if (error) { showToast('Gagal menyimpan ke Supabase'); console.error(error); return false; }
+    await loadLeadsFromDb();
+    return true;
   }
   async function writeDeleteLead(id) {
     const { error } = await sb.from(TABLE).delete().eq('id', id);
@@ -1217,8 +1296,9 @@
   }
   async function writeUpdateLead(id, patch) {
     const { error } = await sb.from(TABLE).update(patch).eq('id', id);
-    if (error) { showToast('Gagal update di Supabase'); console.error(error); return; }
-    loadLeadsFromDb();
+    if (error) { showToast('Gagal update di Supabase'); console.error(error); return false; }
+    await loadLeadsFromDb();
+    return true;
   }
 
   function clearLeadForm() {
@@ -1238,7 +1318,9 @@
     document.getElementById('tCancelBtn').classList.add('hidden');
   }
 
-  function addLead() {
+  let isSavingLead = false;
+  async function addLead() {
+    if (isSavingLead) return;
     const editingId = document.getElementById('editingLeadId').value;
     const nama = document.getElementById('tNama').value.trim();
     const phoneCheck = validateWhatsAppNumber(document.getElementById('tTelp').value);
@@ -1253,15 +1335,28 @@
     const dup = findDuplicate(telp, editingId);
     if (dup) { showToast(`Nomor ini sudah ada di tracker atas nama ${dup.nama}`); return; }
 
-    if (editingId) {
-      writeUpdateLead(editingId, { nama, telp, tanggal, status, unit, catatan });
-      showToast('Lead diupdate');
-    } else {
-      writeAddLead({ nama, telp, tanggal, status, unit, catatan, archived: false });
-      showToast('Lead disimpan');
+    isSavingLead = true;
+    const saveButton = document.getElementById('tSaveBtn');
+    const oldText = saveButton.textContent;
+    saveButton.disabled = true;
+    saveButton.textContent = editingId ? 'Mengupdate...' : 'Menyimpan...';
+    try {
+      if (editingId) {
+        const updated = await writeUpdateLead(editingId, { nama, telp, tanggal, status, unit, catatan });
+        if (!updated) return;
+        showToast('Lead diupdate');
+      } else {
+        const saved = await writeAddLead({ nama, telp, tanggal, status, unit, catatan, archived: false });
+        if (!saved) return;
+        showToast('Lead disimpan');
+      }
+      if (currentView !== 'active') setView('active');
+      clearLeadForm();
+    } finally {
+      isSavingLead = false;
+      saveButton.disabled = false;
+      saveButton.textContent = oldText;
     }
-    if (currentView !== 'active') setView('active');
-    clearLeadForm();
   }
   function editLead(id) {
     const l = leadsCache.find(x => String(x.id) === String(id));
@@ -1385,9 +1480,26 @@
     if (total <= PAGE_SIZE) { el.innerHTML = ''; return; }
     el.innerHTML = `
       <button onclick="changePage(-1)" ${currentPage <= 1 ? 'disabled' : ''}>‹ Sebelumnya</button>
-      <span>Halaman ${currentPage} dari ${totalPages} (${total} lead)</span>
+      <span class="page-jump">
+        <span>Hal.</span>
+        <input type="number" min="1" max="${totalPages}" value="${currentPage}"
+          aria-label="Nomor halaman"
+          onkeydown="if(event.key==='Enter') goToPage(this.value, ${totalPages})">
+        <span>dari ${totalPages}</span>
+        <button class="ghost" onclick="goToPage(this.previousElementSibling.previousElementSibling.value, ${totalPages})">Go</button>
+      </span>
       <button onclick="changePage(1)" ${currentPage >= totalPages ? 'disabled' : ''}>Berikutnya ›</button>
     `;
+  }
+  function goToPage(value, totalPages) {
+    const page = Number.parseInt(value, 10);
+    if (!Number.isInteger(page) || page < 1 || page > totalPages) {
+      showToast(`Masukkan halaman 1 sampai ${totalPages}`);
+      return;
+    }
+    currentPage = page;
+    renderLeads();
+    document.getElementById('leadList').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   function changePage(delta) {
     currentPage += delta;
@@ -1438,6 +1550,15 @@
     }
     return { start, end };
   }
+  function resetReportFilter() {
+    document.getElementById('reportStartDate').value = '';
+    document.getElementById('reportEndDate').value = '';
+    showToast('Filter laporan direset');
+  }
+  window.addEventListener('scroll', () => {
+    const backTop = document.getElementById('backToTop');
+    if (backTop) backTop.classList.toggle('hidden', window.scrollY < 360);
+  }, { passive: true });
   function reportRows() {
     const range = reportDateRange();
     if (!range) return [];
@@ -1574,13 +1695,19 @@
     const delim = detectDelimiter(firstLine);
     let rows = parseDelimitedText(text, delim);
     if (rows[0] && rows[0][0] && rows[0][0].toLowerCase().includes('nama')) rows = rows.slice(1);
-    return rows.map(cols => ({
-      nama: cols[0] || '',
-      telp: normalizePhone(cols[1] || ''),
-      tanggal: parseDateFlexible(cols[2] || ''),
-      status: guessStatusKey(cols[3] || ''),
-      unit: (cols[4] || '').trim()
-    })).filter(r => r.nama && r.telp);
+    return rows.map(cols => {
+      const nama = (cols[0] || '').trim();
+      const phoneCheck = validateWhatsAppNumber(cols[1] || '');
+      return {
+        nama,
+        telp: phoneCheck.normalized,
+        tanggal: parseDateFlexible(cols[2] || ''),
+        status: guessStatusKey(cols[3] || ''),
+        unit: (cols[4] || '').trim(),
+        validPhone: Boolean(nama && phoneCheck.valid),
+        phoneError: nama && !phoneCheck.valid ? phoneCheck.message : ''
+      };
+    }).filter(r => r.nama);
   }
   function previewImport() {
     const fileInput = document.getElementById('impFile');
@@ -1598,16 +1725,23 @@
     pendingImportRows = rows;
     const box = document.getElementById('impPreview');
     const confirmRow = document.getElementById('impConfirmRow');
-    if (rows.length === 0) {
+    const validRows = rows.filter(r => r.validPhone);
+    const invalidRows = rows.filter(r => !r.validPhone);
+    if (validRows.length === 0) {
       box.textContent = 'Tidak ada baris valid terdeteksi. Pastikan format: Nama, No. WA, Tanggal, Status, Unit.';
       confirmRow.classList.add('hidden');
       return;
     }
-    let preview = `${rows.length} baris terdeteksi:\n\n`;
-    rows.slice(0, 8).forEach(r => {
+    let preview = `${validRows.length} baris valid terdeteksi`;
+    if (invalidRows.length) preview += `\n${invalidRows.length} baris dilewati karena nomor tidak valid`;
+    preview += ':\n\n';
+    validRows.slice(0, 8).forEach(r => {
       preview += `• ${r.nama} — ${r.telp} — ${statusLabel[r.status]} — ${r.unit || '-'}\n`;
     });
-    if (rows.length > 8) preview += `… dan ${rows.length - 8} baris lainnya`;
+    if (validRows.length > 8) preview += `… dan ${validRows.length - 8} baris valid lainnya`;
+    if (invalidRows.length) {
+      preview += '\nBaris invalid pertama: ' + invalidRows.slice(0, 3).map(r => `${r.nama} (${r.phoneError})`).join('; ');
+    }
     box.textContent = preview;
     confirmRow.classList.remove('hidden');
   }
@@ -1616,6 +1750,7 @@
     const toInsert = [];
     let skipped = 0;
     pendingImportRows.forEach(r => {
+      if (!r.validPhone) { skipped++; return; }
       if (findDuplicate(r.telp)) { skipped++; return; }
       toInsert.push({ ...r, archived: false });
     });
