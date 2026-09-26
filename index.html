@@ -141,6 +141,10 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 10px;
   }
+  .priority-field {
+    width: calc((100% - 10px) / 2);
+    min-width: 0;
+  }
   .tracker-contact-row input[type="date"] {
     font-size: 11px;
     padding-left: 7px;
@@ -275,29 +279,6 @@
   .badge.warm { background: #FEF3C7; color: #92400E; }
   .badge.cold { background: #E0F2FE; color: #075985; }
   .badge-group { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
-  .survey-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: #EFF6FF;
-    border: 1px solid #BFDBFE;
-    color: #1E40AF;
-    font-size: 11.5px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: var(--radius-sm, 8px);
-    margin-top: 8px;
-  }
-  .survey-today-banner {
-    background: #EFF6FF;
-    border: 1px solid #93C5FD;
-    border-radius: var(--radius);
-    padding: 10px 14px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #1E40AF;
-    margin-bottom: 10px;
-  }
   .quick-note-box { display: flex; gap: 6px; margin-top: 8px; }
   .quick-note-box input { min-height: 36px; font-size: 12.5px; padding: 6px 10px; }
   .quick-note-box button { min-height: 36px; padding: 6px 12px; font-size: 12px; white-space: nowrap; }
@@ -863,7 +844,6 @@
   <div class="header-stats" aria-label="Ringkasan tracker">
     <div><strong id="headerActiveCount">0</strong><span>Lead aktif</span></div>
     <div><strong id="headerFollowupCount">0</strong><span>Perlu follow-up</span></div>
-    <div><strong id="headerSurveyCount">0</strong><span>Survey hari ini</span></div>
   </div>
 </header>
 
@@ -975,21 +955,13 @@
         </div>
       </div>
     </div>
-    <div class="row2">
-      <div>
-        <label>Prioritas</label>
-        <select id="tPrioritas">
-          <option value="hot">🔥 HOT (siap DP/KPR)</option>
-          <option value="warm" selected>🌤️ WARM (pertimbangan)</option>
-          <option value="cold">❄️ COLD (belum responsif)</option>
-        </select>
-      </div>
-      <div>
-        <label>Janji survey (opsional)</label>
-        <div class="date-input-wrap">
-          <input type="datetime-local" id="tJadwalSurvey">
-        </div>
-      </div>
+    <div class="priority-field">
+      <label>Prioritas</label>
+      <select id="tPrioritas">
+        <option value="cold">Cold</option>
+        <option value="warm" selected>Warm</option>
+        <option value="hot">Hot</option>
+      </select>
     </div>
     <div class="row2">
       <div>
@@ -1027,7 +999,6 @@
       <button class="ghost hidden" id="tCancelBtn" onclick="cancelEdit()">Batal edit</button>
     </div>
 
-    <div id="surveyTodayBanner" class="hidden"></div>
     <div id="followupBanner"></div>
 
     <div class="view-toggle">
@@ -1307,7 +1278,7 @@
     site_visit: 'Sudah Site Visit', booking: 'Sudah Booking', banding: 'Masih Membandingkan',
     investor: 'Investor', end_user: 'End User', progress: 'Update Progress'
   };
-  const priorityLabel = { hot: '🔥 HOT', warm: '🌤️ WARM', cold: '❄️ COLD' };
+  const priorityLabel = { hot: 'Hot', warm: 'Warm', cold: 'Cold' };
   const stageLabel = { h1: 'H+1', h3: 'H+3', h7: 'H+7', nurture: 'Nurture' };
 
   function buildMessage(status, stage, nama, unit, note) {
@@ -1568,14 +1539,10 @@
   function updateHeaderStats() {
     const active = leadsCache.filter(l => !l.archived);
     const followup = active.filter(l => stageFromDays(daysSince(l.tanggal)) !== 'nurture');
-    const today = todayStr();
-    const surveyToday = active.filter(l => l.jadwal_survey && l.jadwal_survey.startsWith(today));
     const activeEl = document.getElementById('headerActiveCount');
     const followupEl = document.getElementById('headerFollowupCount');
-    const surveyEl = document.getElementById('headerSurveyCount');
     if (activeEl) activeEl.textContent = active.length;
     if (followupEl) followupEl.textContent = followup.length;
-    if (surveyEl) surveyEl.textContent = surveyToday.length;
   }
 
   async function loadLeadsFromDb() {
@@ -1621,7 +1588,6 @@
       phoneValidation.className = 'phone-validation';
     }
     document.getElementById('tTanggal').value = '';
-    document.getElementById('tJadwalSurvey').value = '';
     document.getElementById('tPrioritas').value = 'warm';
     document.getElementById('tCatatan').value = '';
     document.getElementById('tStatus').value = 'baru';
@@ -1640,8 +1606,6 @@
     const telp = phoneCheck.normalized;
     const tanggal = document.getElementById('tTanggal').value || todayStr();
     const prioritas = document.getElementById('tPrioritas').value || 'warm';
-    const jadwalSurveyInput = document.getElementById('tJadwalSurvey').value;
-    const jadwal_survey = jadwalSurveyInput ? new Date(jadwalSurveyInput).toISOString() : null;
     const status = document.getElementById('tStatus').value;
     const unit = document.getElementById('tUnit').value;
     const catatan = document.getElementById('tCatatan').value.trim();
@@ -1658,11 +1622,11 @@
     saveButton.textContent = editingId ? 'Mengupdate...' : 'Menyimpan...';
     try {
       if (editingId) {
-        const updated = await writeUpdateLead(editingId, { nama, telp, tanggal, status, unit, catatan, prioritas, jadwal_survey });
+        const updated = await writeUpdateLead(editingId, { nama, telp, tanggal, status, unit, catatan, prioritas });
         if (!updated) return;
         showToast('Lead diupdate');
       } else {
-        const saved = await writeAddLead({ nama, telp, tanggal, status, unit, catatan, prioritas, jadwal_survey, archived: false });
+        const saved = await writeAddLead({ nama, telp, tanggal, status, unit, catatan, prioritas, archived: false });
         if (!saved) return;
         showToast('Lead disimpan');
       }
@@ -1688,7 +1652,6 @@
     document.getElementById('tNama').value = l.nama;
     document.getElementById('tTelp').value = l.telp;
     document.getElementById('tTanggal').value = l.tanggal;
-    document.getElementById('tJadwalSurvey').value = toDatetimeLocalValue(l.jadwal_survey);
     document.getElementById('tPrioritas').value = l.prioritas || 'warm';
     document.getElementById('tStatus').value = l.status;
     document.getElementById('tUnit').value = l.unit || '';
@@ -1741,7 +1704,6 @@
 
   function renderBanner() {
     const banner = document.getElementById('followupBanner');
-    const surveyBanner = document.getElementById('surveyTodayBanner');
     const active = leadsCache.filter(l => !l.archived);
     const due = active.filter(l => stageFromDays(daysSince(l.tanggal)) !== 'nurture').length;
     const nurture = active.filter(l => stageFromDays(daysSince(l.tanggal)) === 'nurture').length;
@@ -1752,18 +1714,6 @@
       } else {
         banner.className = 'followup-banner';
         banner.textContent = `🔔 ${due} lead perlu di-follow-up (H+1/H+3/H+7)${nurture ? ` • ${nurture} nurture jangka panjang` : ''}`;
-      }
-    }
-    if (surveyBanner) {
-      const today = todayStr();
-      const surveyToday = active.filter(l => l.jadwal_survey && l.jadwal_survey.startsWith(today));
-      if (surveyToday.length > 0) {
-        surveyBanner.className = 'survey-today-banner';
-        surveyBanner.innerHTML = `📅 <strong>${surveyToday.length} janji survey hari ini:</strong> ${surveyToday.map(s => escapeHtml(s.nama)).join(', ')}`;
-        surveyBanner.classList.remove('hidden');
-      } else {
-        surveyBanner.classList.add('hidden');
-        surveyBanner.textContent = '';
       }
     }
   }
@@ -1807,14 +1757,6 @@
       card.className = 'lead-card';
       const stageBadge = l.archived ? `<span class="badge archived">Tidak Tertarik</span>` : `<span class="badge ${stage}">${stageLabel[stage]}</span>`;
       const prioBadge = `<span class="badge ${prio}">${priorityLabel[prio]}</span>`;
-      let surveyDisplay = '';
-      if (l.jadwal_survey) {
-        const sDate = new Date(l.jadwal_survey);
-        if (!isNaN(sDate.getTime())) {
-          const formatted = sDate.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-          surveyDisplay = `<div class="survey-badge">📅 Janji survey: ${formatted}</div>`;
-        }
-      }
       const actionButtons = l.archived
         ? `<button class="ghost" onclick="unarchiveLead('${l.id}')">Aktifkan Lagi</button>
            <button class="danger" onclick="deleteLead('${l.id}')">Hapus</button>`
@@ -1832,7 +1774,6 @@
           </div>
           <div class="badge-group">${prioBadge}${stageBadge}</div>
         </div>
-        ${surveyDisplay}
         ${l.catatan ? `<div class="lead-note">📝 ${escapeHtml(l.catatan)}</div>` : ''}
         ${!l.archived ? `
         <div class="quick-note-box">
