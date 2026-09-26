@@ -271,6 +271,59 @@
   .badge.h7 { background: #F3D9CF; color: var(--danger); }
   .badge.nurture { background: #E4E7EA; color: var(--slate); }
   .badge.archived { background: #E4E7EA; color: var(--ink-soft); }
+  .badge.hot { background: #FFE4E6; color: #9F1239; }
+  .badge.warm { background: #FEF3C7; color: #92400E; }
+  .badge.cold { background: #E0F2FE; color: #075985; }
+  .badge-group { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  .survey-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    color: #1E40AF;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm, 8px);
+    margin-top: 8px;
+  }
+  .survey-today-banner {
+    background: #EFF6FF;
+    border: 1px solid #93C5FD;
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1E40AF;
+    margin-bottom: 10px;
+  }
+  .quick-note-box { display: flex; gap: 6px; margin-top: 8px; }
+  .quick-note-box input { min-height: 36px; font-size: 12.5px; padding: 6px 10px; }
+  .quick-note-box button { min-height: 36px; padding: 6px 12px; font-size: 12px; white-space: nowrap; }
+  button.call {
+    border: none;
+    border-radius: var(--radius-sm, 8px);
+    background: #2563EB;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button.call:hover { background: #1D4ED8; }
+  .quick-share-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
+  .quick-share-btn {
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm, 8px);
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    text-align: left;
+  }
+  .quick-share-btn:hover { border-color: var(--amber); }
+  @media (max-width: 380px) { .quick-share-grid { grid-template-columns: 1fr; } }
   .lead-actions { display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
   .lead-actions button { font-size: 12px; padding: 7px 10px; }
   .lead-note { font-size: 12px; color: var(--ink-soft); margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); white-space: pre-wrap; }
@@ -391,7 +444,8 @@
   #lockScreen {
     position: fixed;
     inset: 0;
-    background: var(--cream);
+    background: radial-gradient(circle at top, #1A293E 0%, #0B131F 100%);
+    color: #F8FAFC;
     z-index: 200;
     display: flex;
     align-items: center;
@@ -400,10 +454,40 @@
     padding: 24px;
     text-align: center;
   }
-  #lockScreen h2 { font-size: 16px; margin: 0 0 4px; }
-  #lockScreen p { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 16px; }
-  #lockScreen input { max-width: 260px; text-align: center; margin-bottom: 10px; }
-  #lockScreen .lockErr { color: var(--danger); font-size: 12px; height: 16px; margin-bottom: 6px; }
+  .lock-card {
+    background: rgba(24, 37, 56, 0.75);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 32px 24px;
+    width: 100%;
+    max-width: 340px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .lock-card h2 { font-size: 20px; font-weight: 700; margin: 12px 0 4px; letter-spacing: -0.02em; color: #FFFFFF; }
+  .lock-card p { font-size: 13px; color: #94A3B8; margin: 0 0 20px; }
+  .lock-input-group { position: relative; width: 100%; margin-bottom: 10px; }
+  .lock-input-group input {
+    width: 100%;
+    height: 48px;
+    background: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius);
+    padding: 0 42px 0 16px;
+    color: #0F172A;
+    font-size: 15px;
+    text-align: center;
+    letter-spacing: normal;
+  }
+  .lock-input-group input:focus {
+    outline: none;
+    border-color: var(--amber);
+    box-shadow: 0 0 0 3px rgba(201, 130, 42, 0.25);
+  }
+  #lockScreen .lockErr { color: #F87171; font-size: 12.5px; min-height: 20px; margin-bottom: 8px; font-weight: 500; }
   #eyeToggle { -webkit-tap-highlight-color: transparent; border-radius: 6px; }
   #eyeToggle:focus, #eyeToggle:active { outline: none; background: rgba(0,0,0,0.05); }
   .toast {
@@ -603,20 +687,10 @@
     border-color: var(--amber);
     transform: translateY(-2px);
   }
-  #lockScreen {
-    background:
-      radial-gradient(circle at top, rgba(201, 130, 42, 0.13), transparent 26rem),
-      var(--cream);
-  }
-  #lockScreen h2 {
-    font-size: 21px;
-    letter-spacing: -0.02em;
-  }
   .app-logo {
-    width: 92px;
-    height: 92px;
-    margin: 0 0 15px;
-    filter: drop-shadow(0 10px 18px rgba(28, 43, 58, 0.18));
+    width: 72px;
+    height: 72px;
+    margin: 0 0 12px;
   }
   .app-logo-mark {
     display: block;
@@ -741,6 +815,7 @@
 <body>
 
 <div id="lockScreen">
+ <div class="lock-card">
   <div class="app-logo" aria-label="Logo WA Follow-Up Assistant" role="img">
     <svg class="app-logo-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
@@ -763,10 +838,10 @@
     </svg>
   </div>
   <h2>WA Follow-Up Assistant</h2>
-  <p>Masukkan password untuk membuka</p>
-  <div style="position:relative; width:260px;">
-    <input type="password" id="lockInput" placeholder="Password" style="width:260px; box-sizing:border-box; padding-right:40px; letter-spacing:normal; font-size:14px;" onkeydown="if(event.key==='Enter') tryUnlock()">
-    <button type="button" id="eyeToggle" onclick="togglePasswordVisibility()" aria-label="Lihat password" style="position:absolute; right:4px; top:50%; transform:translateY(-50%); width:30px; height:30px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; padding:0; color:var(--ink-soft);">
+  <p>CitraLand Megah Batam — masukkan password untuk membuka</p>
+  <div class="lock-input-group">
+    <input type="password" id="lockInput" placeholder="Password" onkeydown="if(event.key==='Enter') tryUnlock()">
+    <button type="button" id="eyeToggle" onclick="togglePasswordVisibility()" aria-label="Lihat password" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); width:30px; height:30px; display:flex; align-items:center; justify-content:center; background:none; border:none; cursor:pointer; padding:0; color:#64748B;">
       <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
         <circle cx="12" cy="12" r="3"></circle>
@@ -774,10 +849,12 @@
     </button>
   </div>
   <div class="lockErr" id="lockErr"></div>
-  <button class="primary" onclick="tryUnlock()">Buka</button>
+  <button class="primary" style="width:100%;" onclick="tryUnlock()">Buka</button>
+ </div>
 </div>
 
 <div id="appRoot" class="hidden">
+
 
 <div class="app-chrome">
 <header class="top">
@@ -786,6 +863,7 @@
   <div class="header-stats" aria-label="Ringkasan tracker">
     <div><strong id="headerActiveCount">0</strong><span>Lead aktif</span></div>
     <div><strong id="headerFollowupCount">0</strong><span>Perlu follow-up</span></div>
+    <div><strong id="headerSurveyCount">0</strong><span>Survey hari ini</span></div>
   </div>
 </header>
 
@@ -827,6 +905,7 @@
           <option value="banding">Masih Membandingkan</option>
           <option value="investor">Investor</option>
           <option value="end_user">End User</option>
+          <option value="progress">Update Progress Bangunan</option>
         </select>
       </div>
       <div>
@@ -850,6 +929,14 @@
       <option>Grand Hills L9</option>
       <option>New Chateau</option>
     </select>
+
+    <label>Pintasan sisipkan info (opsional)</label>
+    <div class="quick-share-grid">
+      <button type="button" class="quick-share-btn" onclick="insertScriptInfo('gmaps')">📍 Lokasi GMaps</button>
+      <button type="button" class="quick-share-btn" onclick="insertScriptInfo('kpr')">🧮 Link KPR Simulator</button>
+      <button type="button" class="quick-share-btn" onclick="insertScriptInfo('promo')">🎁 Info Promo Berjalan</button>
+      <button type="button" class="quick-share-btn" onclick="insertScriptInfo('wna')">🌏 Info Kepemilikan WNA</button>
+    </div>
 
     <label>Catatan tambahan (opsional)</label>
     <textarea id="sNote" placeholder="Contoh: kemarin sempat tanya soal cicilan 15 tahun"></textarea>
@@ -890,6 +977,22 @@
     </div>
     <div class="row2">
       <div>
+        <label>Prioritas</label>
+        <select id="tPrioritas">
+          <option value="hot">🔥 HOT (siap DP/KPR)</option>
+          <option value="warm" selected>🌤️ WARM (pertimbangan)</option>
+          <option value="cold">❄️ COLD (belum responsif)</option>
+        </select>
+      </div>
+      <div>
+        <label>Janji survey (opsional)</label>
+        <div class="date-input-wrap">
+          <input type="datetime-local" id="tJadwalSurvey">
+        </div>
+      </div>
+    </div>
+    <div class="row2">
+      <div>
         <label>Status</label>
         <select id="tStatus">
           <option value="baru">Lead Baru</option>
@@ -900,6 +1003,7 @@
           <option value="banding">Masih Membandingkan</option>
           <option value="investor">Investor</option>
           <option value="end_user">End User</option>
+          <option value="progress">Update Progress Bangunan</option>
         </select>
       </div>
       <div>
@@ -923,6 +1027,7 @@
       <button class="ghost hidden" id="tCancelBtn" onclick="cancelEdit()">Batal edit</button>
     </div>
 
+    <div id="surveyTodayBanner" class="hidden"></div>
     <div id="followupBanner"></div>
 
     <div class="view-toggle">
@@ -942,8 +1047,16 @@
         <option value="banding">Masih Membandingkan</option>
         <option value="investor">Investor</option>
         <option value="end_user">End User</option>
+        <option value="progress">Update Progress</option>
+      </select>
+      <select id="leadFilterPrioritas" onchange="currentPage=1; renderLeads();" style="max-width:120px;">
+        <option value="">Semua prioritas</option>
+        <option value="hot">🔥 HOT</option>
+        <option value="warm">🌤️ WARM</option>
+        <option value="cold">❄️ COLD</option>
       </select>
     </div>
+
 
     <div id="loadingState" class="empty hidden">Memuat data lead...</div>
     <div id="leadList" style="margin-top:6px;"></div>
@@ -1032,6 +1145,7 @@
     <select id="bSegmen">
       <option value="cold">Cold — belum pernah kontak intens</option>
       <option value="warm">Warm — sudah pernah ngobrol</option>
+      <option value="investor">Investor / WNA</option>
     </select>
 
     <label>Tema</label>
@@ -1040,6 +1154,7 @@
       <option value="edukasi_kpr">Edukasi simulasi KPR</option>
       <option value="unit_ready">Unit ready stock</option>
       <option value="testimoni">Testimoni konsumen</option>
+      <option value="wna">Panduan kepemilikan WNA</option>
     </select>
 
     <div class="actions">
@@ -1184,13 +1299,15 @@
     booking: u => `Makasih banyak udah booking ${u || 'unitnya'} ya! 🎉 Untuk proses selanjutnya, boleh Thendri bantu jadwalin pembayaran DP-nya?`,
     banding: u => `Wajar banget kalau masih bandingin beberapa pilihan buat ${u || 'unitnya'}, santai aja gak masalah 🙏 Kalau boleh tahu, ada hal spesifik yang masih jadi pertimbangan — harga, lokasi, atau yang lain?`,
     investor: u => `Untuk ${u || 'unitnya'} dari sisi investasi, kalau berkenan Thendri bisa kirimin simulasi ROI dan rental yield terbarunya — boleh?`,
-    end_user: u => `Untuk ${u || 'unitnya'} yang rencananya buat ditinggalin sendiri, kalau mau Thendri ceritain sedikit soal fasilitas dan suasana lingkungannya — boleh?`
+    end_user: u => `Untuk ${u || 'unitnya'} yang rencananya buat ditinggalin sendiri, kalau mau Thendri ceritain sedikit soal fasilitas dan suasana lingkungannya — boleh?`,
+    progress: u => `Sekadar update, progres pembangunan ${u ? 'tipe ' + u : 'CitraLand Megah'} makin kelihatan kemajuannya minggu ini. Mau Thendri kirimkan foto/video progres terbarunya?`
   };
   const statusLabel = {
     baru: 'Lead Baru', bertanya: 'Sudah Bertanya', ghosting: 'Ghosting',
     site_visit: 'Sudah Site Visit', booking: 'Sudah Booking', banding: 'Masih Membandingkan',
-    investor: 'Investor', end_user: 'End User'
+    investor: 'Investor', end_user: 'End User', progress: 'Update Progress'
   };
+  const priorityLabel = { hot: '🔥 HOT', warm: '🌤️ WARM', cold: '❄️ COLD' };
   const stageLabel = { h1: 'H+1', h3: 'H+3', h7: 'H+7', nurture: 'Nurture' };
 
   function buildMessage(status, stage, nama, unit, note) {
@@ -1201,6 +1318,25 @@
   }
 
   // ---------- Script Generator tab ----------
+  function insertScriptInfo(type) {
+    const textarea = document.getElementById('sOutput');
+    let addition = '';
+    if (type === 'gmaps') {
+      addition = '\n\n📍 Lokasi show unit CitraLand Megah (Google Maps):\nhttps://maps.google.com/?q=CitraLand+Megah+Batam';
+    } else if (type === 'kpr') {
+      addition = '\n\n🧮 Coba hitung estimasi cicilan KPR di sini:\nhttps://simulasikpr.vercel.app';
+    } else if (type === 'promo') {
+      addition = '\n\n🎁 Ada promo yang sedang berjalan bulan ini — mau Thendri infoin detailnya?';
+    } else if (type === 'wna') {
+      addition = '\n\n🌏 Info tambahan: untuk WNA/pemegang paspor asing, sekarang juga bisa memiliki unit di CitraLand Megah Batam dengan syarat yang sudah dipermudah.';
+    }
+    if (!textarea.value.trim()) {
+      showToast('Buat pesan dulu sebelum menyisipkan info');
+      return;
+    }
+    textarea.value = (textarea.value.trim() + addition).trim();
+    showToast('Info disisipkan');
+  }
   function runScriptGenerator() {
     const nama = document.getElementById('sNama').value.trim();
     const status = document.getElementById('sStatus').value;
@@ -1296,7 +1432,7 @@
     harga: n => `${greet(n)} Saya paham, harga memang jadi pertimbangan besar untuk keputusan sebesar ini. Kalau boleh tahu, apakah lebih ke arah angka totalnya, atau ke besaran cicilan per bulannya?`,
     dp: n => `${greet(n)} DP di awal memang sering jadi kendala. Ada opsi cara bayar tanpa DP untuk tenor tertentu — mau saya kirimkan simulasinya?`,
     kpr: n => `${greet(n)} Soal KPR, biasanya yang bikin ragu itu prosesnya atau approval-nya ya? Saya bisa bantu cek estimasi dulu sebelum apply resmi.`,
-    lokasi: n => `${greet(n)} Boleh cerita sedikit, lokasi yang dicari itu lebih dekat ke mana? Biar saya bisa kasih gambaran akses dari sini.`,
+    lokasi: n => `${greet(n)} Boleh cerita sedikit, lokasi yang dicari itu lebih dekat ke mana? Biar saya kasih gambaran akses dari sini.`,
     timing: n => `${greet(n)} Gak masalah kalau belum waktunya sekarang. Kalau nanti sudah lebih siap, mau saya simpan info unit yang masih tersedia?`,
     pasangan: n => `${greet(n)} Wajar banget kalau perlu diskusi dulu dengan pasangan. Mau saya siapkan ringkasan harga, spesifikasi, dan simulasi cicilan biar lebih mudah didiskusikan bareng?`,
     ortu: n => `${greet(n)} Diskusi dengan orang tua itu penting untuk keputusan sebesar ini. Mau saya siapkan ringkasan lengkap biar lebih mudah dijelaskan ke beliau?`,
@@ -1328,13 +1464,22 @@
       promo_mingguan: 'Halo, ada info promo minggu ini di CitraLand Megah Batam yang mungkin relevan buat rencana rumah atau investasi. Mau saya kirimkan detailnya?',
       edukasi_kpr: 'Halo, belakangan banyak yang tanya soal simulasi KPR. Kalau mau coba hitung estimasi cicilan sendiri, saya punya tools simpel — mau saya kirim linknya?',
       unit_ready: 'Halo, ada beberapa unit ready stock di Emerald Hills dan Grand Hills. Kalau tertarik lihat-lihat, saya bisa kirim detailnya.',
-      testimoni: 'Halo, mau share sedikit cerita dari konsumen yang baru closing bulan ini — siapa tahu relevan sama rencana kamu juga.'
+      testimoni: 'Halo, mau share sedikit cerita dari konsumen yang baru closing bulan ini — siapa tahu relevan sama rencana kamu juga.',
+      wna: 'Halo, bagi rekan WNA/pemegang paspor asing yang tertarik investasi properti di Batam, aturan kepemilikannya sekarang sudah lebih dipermudah. Mau saya kirim panduan singkatnya?'
     },
     warm: {
       promo_mingguan: 'Halo, promo minggu ini ada penyesuaian cara bayar yang mungkin cocok buat rencana yang kemarin sempat kita diskusikan. Mau saya kirim detailnya?',
       edukasi_kpr: 'Halo, sekadar update — suku bunga KPR promo developer group masih berlaku sampai saat ini. Mau saya bantu hitung ulang simulasinya?',
       unit_ready: 'Halo, unit yang kemarin sempat dilihat masih tersedia, tapi stoknya makin terbatas. Mau saya update posisi unitnya?',
-      testimoni: 'Halo, kemarin ada yang closing untuk tipe yang sama dengan yang kamu lihat. Mau saya share pengalamannya?'
+      testimoni: 'Halo, kemarin ada yang closing untuk tipe yang sama dengan yang kamu lihat. Mau saya share pengalamannya?',
+      wna: 'Halo, info tambahan soal kepemilikan WNA yang kemarin sempat ditanyakan — sudah saya siapkan ringkasannya, mau saya kirim sekarang?'
+    },
+    investor: {
+      promo_mingguan: 'Halo, peluang investasi di Batam makin menarik — minggu ini ada penyesuaian cara bayar khusus unit investasi. Mau saya kirim detailnya?',
+      edukasi_kpr: 'Halo, untuk pembelian investasi, ada opsi KPR dengan tenor fleksibel dari bank mitra. Mau saya bantu siapkan simulasinya?',
+      unit_ready: 'Halo, ada unit dengan potensi sewa tinggi yang ready stock. Mau saya kirim detail dan estimasi rental yield-nya?',
+      testimoni: 'Halo, kemarin ada investor yang baru menambah unit portofolionya di CitraLand Megah. Mau saya share gambaran hasilnya?',
+      wna: 'Halo, untuk rekan WNA yang tertarik investasi di Batam, prosesnya sekarang lebih mudah hanya dengan paspor. Mau saya kirim panduan resminya?'
     }
   };
   function runBroadcast() {
@@ -1354,7 +1499,7 @@
   let leadsCache = [];
   let currentView = 'active'; // 'active' | 'archived'
   let currentPage = 1;
-  const PAGE_SIZE = 25;
+  const PAGE_SIZE = 20;
 
   function todayStr() {
     const now = new Date();
@@ -1423,10 +1568,14 @@
   function updateHeaderStats() {
     const active = leadsCache.filter(l => !l.archived);
     const followup = active.filter(l => stageFromDays(daysSince(l.tanggal)) !== 'nurture');
+    const today = todayStr();
+    const surveyToday = active.filter(l => l.jadwal_survey && l.jadwal_survey.startsWith(today));
     const activeEl = document.getElementById('headerActiveCount');
     const followupEl = document.getElementById('headerFollowupCount');
+    const surveyEl = document.getElementById('headerSurveyCount');
     if (activeEl) activeEl.textContent = active.length;
     if (followupEl) followupEl.textContent = followup.length;
+    if (surveyEl) surveyEl.textContent = surveyToday.length;
   }
 
   async function loadLeadsFromDb() {
@@ -1472,6 +1621,8 @@
       phoneValidation.className = 'phone-validation';
     }
     document.getElementById('tTanggal').value = '';
+    document.getElementById('tJadwalSurvey').value = '';
+    document.getElementById('tPrioritas').value = 'warm';
     document.getElementById('tCatatan').value = '';
     document.getElementById('tStatus').value = 'baru';
     document.getElementById('tUnit').value = '';
@@ -1488,6 +1639,9 @@
     const phoneCheck = validateWhatsAppNumber(document.getElementById('tTelp').value);
     const telp = phoneCheck.normalized;
     const tanggal = document.getElementById('tTanggal').value || todayStr();
+    const prioritas = document.getElementById('tPrioritas').value || 'warm';
+    const jadwalSurveyInput = document.getElementById('tJadwalSurvey').value;
+    const jadwal_survey = jadwalSurveyInput ? new Date(jadwalSurveyInput).toISOString() : null;
     const status = document.getElementById('tStatus').value;
     const unit = document.getElementById('tUnit').value;
     const catatan = document.getElementById('tCatatan').value.trim();
@@ -1504,11 +1658,11 @@
     saveButton.textContent = editingId ? 'Mengupdate...' : 'Menyimpan...';
     try {
       if (editingId) {
-        const updated = await writeUpdateLead(editingId, { nama, telp, tanggal, status, unit, catatan });
+        const updated = await writeUpdateLead(editingId, { nama, telp, tanggal, status, unit, catatan, prioritas, jadwal_survey });
         if (!updated) return;
         showToast('Lead diupdate');
       } else {
-        const saved = await writeAddLead({ nama, telp, tanggal, status, unit, catatan, archived: false });
+        const saved = await writeAddLead({ nama, telp, tanggal, status, unit, catatan, prioritas, jadwal_survey, archived: false });
         if (!saved) return;
         showToast('Lead disimpan');
       }
@@ -1520,6 +1674,13 @@
       saveButton.textContent = oldText;
     }
   }
+  function toDatetimeLocalValue(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 16);
+  }
   function editLead(id) {
     const l = leadsCache.find(x => String(x.id) === String(id));
     if (!l) return;
@@ -1527,6 +1688,8 @@
     document.getElementById('tNama').value = l.nama;
     document.getElementById('tTelp').value = l.telp;
     document.getElementById('tTanggal').value = l.tanggal;
+    document.getElementById('tJadwalSurvey').value = toDatetimeLocalValue(l.jadwal_survey);
+    document.getElementById('tPrioritas').value = l.prioritas || 'warm';
     document.getElementById('tStatus').value = l.status;
     document.getElementById('tUnit').value = l.unit || '';
     document.getElementById('tCatatan').value = l.catatan || '';
@@ -1555,6 +1718,19 @@
     renderLeads();
   }
 
+  async function addQuickNote(id) {
+    const input = document.getElementById(`quickNote_${id}`);
+    if (!input) return;
+    const val = input.value.trim();
+    if (!val) return;
+    const l = leadsCache.find(x => String(x.id) === String(id));
+    if (!l) return;
+    const stamp = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+    const newNote = l.catatan ? `${l.catatan}\n[${stamp}] ${val}` : `[${stamp}] ${val}`;
+    await writeUpdateLead(id, { catatan: newNote });
+    showToast('Catatan ditambahkan');
+  }
+
   function waLinkFor(l) {
     const d = daysSince(l.tanggal);
     const stage = stageFromDays(d);
@@ -1565,16 +1741,30 @@
 
   function renderBanner() {
     const banner = document.getElementById('followupBanner');
-    if (!banner) return;
+    const surveyBanner = document.getElementById('surveyTodayBanner');
     const active = leadsCache.filter(l => !l.archived);
     const due = active.filter(l => stageFromDays(daysSince(l.tanggal)) !== 'nurture').length;
     const nurture = active.filter(l => stageFromDays(daysSince(l.tanggal)) === 'nurture').length;
-    if (due === 0) {
-      banner.className = 'followup-banner zero';
-      banner.textContent = active.length === 0 ? 'Belum ada lead aktif.' : `✅ Tidak ada yang perlu di-follow-up hari ini${nurture ? ` • ${nurture} nurture jangka panjang` : ''}.`;
-    } else {
-      banner.className = 'followup-banner';
-      banner.textContent = `🔔 ${due} lead perlu di-follow-up (H+1/H+3/H+7)${nurture ? ` • ${nurture} nurture jangka panjang` : ''}`;
+    if (banner) {
+      if (due === 0) {
+        banner.className = 'followup-banner zero';
+        banner.textContent = active.length === 0 ? 'Belum ada lead aktif.' : `✅ Tidak ada yang perlu di-follow-up hari ini${nurture ? ` • ${nurture} nurture jangka panjang` : ''}.`;
+      } else {
+        banner.className = 'followup-banner';
+        banner.textContent = `🔔 ${due} lead perlu di-follow-up (H+1/H+3/H+7)${nurture ? ` • ${nurture} nurture jangka panjang` : ''}`;
+      }
+    }
+    if (surveyBanner) {
+      const today = todayStr();
+      const surveyToday = active.filter(l => l.jadwal_survey && l.jadwal_survey.startsWith(today));
+      if (surveyToday.length > 0) {
+        surveyBanner.className = 'survey-today-banner';
+        surveyBanner.innerHTML = `📅 <strong>${surveyToday.length} janji survey hari ini:</strong> ${surveyToday.map(s => escapeHtml(s.nama)).join(', ')}`;
+        surveyBanner.classList.remove('hidden');
+      } else {
+        surveyBanner.classList.add('hidden');
+        surveyBanner.textContent = '';
+      }
     }
   }
 
@@ -1584,6 +1774,7 @@
     if (!list) return;
     const search = (document.getElementById('leadSearch').value || '').toLowerCase().trim();
     const statusFilter = document.getElementById('leadFilterStatus').value;
+    const prioFilter = document.getElementById('leadFilterPrioritas').value;
     let leads = leadsCache.filter(l => !!l.archived === (currentView === 'archived'));
     if (search) leads = leads.filter(l =>
       (l.nama || '').toLowerCase().includes(search) ||
@@ -1592,6 +1783,7 @@
       (l.catatan || '').toLowerCase().includes(search)
     );
     if (statusFilter) leads = leads.filter(l => l.status === statusFilter);
+    if (prioFilter) leads = leads.filter(l => (l.prioritas || 'warm') === prioFilter);
 
     if (leads.length === 0) {
       list.innerHTML = `<div class="empty">${currentView === 'archived' ? 'Belum ada lead yang ditandai tidak tertarik.' : 'Belum ada lead yang cocok.'}</div>`;
@@ -1610,13 +1802,24 @@
     pageItems.forEach(l => {
       const d = daysSince(l.tanggal);
       const stage = stageFromDays(d);
+      const prio = l.prioritas || 'warm';
       const card = document.createElement('div');
       card.className = 'lead-card';
-      const badge = l.archived ? `<span class="badge archived">Tidak Tertarik</span>` : `<span class="badge ${stage}">${stageLabel[stage]}</span>`;
+      const stageBadge = l.archived ? `<span class="badge archived">Tidak Tertarik</span>` : `<span class="badge ${stage}">${stageLabel[stage]}</span>`;
+      const prioBadge = `<span class="badge ${prio}">${priorityLabel[prio]}</span>`;
+      let surveyDisplay = '';
+      if (l.jadwal_survey) {
+        const sDate = new Date(l.jadwal_survey);
+        if (!isNaN(sDate.getTime())) {
+          const formatted = sDate.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+          surveyDisplay = `<div class="survey-badge">📅 Janji survey: ${formatted}</div>`;
+        }
+      }
       const actionButtons = l.archived
         ? `<button class="ghost" onclick="unarchiveLead('${l.id}')">Aktifkan Lagi</button>
            <button class="danger" onclick="deleteLead('${l.id}')">Hapus</button>`
         : `<button class="wa" onclick="window.open('${waLinkFor(l)}','_blank')">Follow up WA</button>
+           <button class="call" onclick="window.open('tel:${phoneForWhatsApp(l.telp)}','_self')">📞 Telp</button>
            <button class="ghost" onclick="markFollowedUpToday('${l.id}')">Tandai hari ini</button>
            <button class="ghost" onclick="editLead('${l.id}')">Edit</button>
            <button class="ghost" onclick="archiveLead('${l.id}')">Tidak Tertarik</button>
@@ -1627,9 +1830,15 @@
             <div class="lead-name">${escapeHtml(l.nama)}</div>
             <div class="lead-meta">${statusLabel[l.status] || l.status}${l.unit ? ' • ' + escapeHtml(l.unit) : ''} • ${d} hari lalu</div>
           </div>
-          ${badge}
+          <div class="badge-group">${prioBadge}${stageBadge}</div>
         </div>
+        ${surveyDisplay}
         ${l.catatan ? `<div class="lead-note">📝 ${escapeHtml(l.catatan)}</div>` : ''}
+        ${!l.archived ? `
+        <div class="quick-note-box">
+          <input type="text" id="quickNote_${l.id}" placeholder="+ Tambah catatan cepat..." onkeydown="if(event.key==='Enter') addQuickNote('${l.id}')">
+          <button class="ghost" onclick="addQuickNote('${l.id}')">Tambah</button>
+        </div>` : ''}
         <div class="lead-actions">${actionButtons}</div>
       `;
       list.appendChild(card);
@@ -1684,14 +1893,17 @@
     if (/[",\n]/.test(v)) return '"' + v.replace(/"/g, '""') + '"';
     return v;
   }
-  function buildCsv() {
+  function buildCsv(rows) {
     const header = ['Nama','No. WA','Tanggal Kontak Terakhir','Status','Tipe Unit','Catatan','Tidak Tertarik'];
-    const rows = reportRows().map(l => [l.nama, phoneForWhatsApp(l.telp), l.tanggal, statusLabel[l.status] || l.status, l.unit || '', l.catatan || '', l.archived ? 'Ya' : '']);
-    return [header, ...rows].map(r => r.map(csvEscape).join(',')).join('\n');
+    const body = rows.map(l => [l.nama, phoneForWhatsApp(l.telp), l.tanggal, statusLabel[l.status] || l.status, l.unit || '', l.catatan || '', l.archived ? 'Ya' : '']);
+    return [header, ...body].map(r => r.map(csvEscape).join(',')).join('\n');
   }
   function exportCsv() {
-    if (reportRows().length === 0) { showToast('Tidak ada data pada rentang tanggal ini'); return; }
-    const csv = buildCsv();
+    const range = reportDateRange();
+    if (!range) return;
+    const rows = reportRows(range);
+    if (rows.length === 0) { showToast('Tidak ada data pada rentang tanggal ini'); return; }
+    const csv = buildCsv(rows);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1721,9 +1933,7 @@
     const backTop = document.getElementById('backToTop');
     if (backTop) backTop.classList.toggle('hidden', window.scrollY < 360);
   }, { passive: true });
-  function reportRows() {
-    const range = reportDateRange();
-    if (!range) return [];
+  function reportRows(range) {
     return leadsCache.filter(l => {
       const date = l.tanggal || '';
       return (!range.start || date >= range.start) && (!range.end || date <= range.end);
@@ -1731,8 +1941,7 @@
       String(a.nama || '').localeCompare(String(b.nama || ''), 'id')
     );
   }
-  function reportTableHtml() {
-    const rows = reportRows();
+  function reportTableHtml(rows) {
     return `
       <table>
         <thead><tr>
@@ -1752,14 +1961,15 @@
       </table>`;
   }
   function exportExcel() {
-    const rows = reportRows();
-    if (rows.length === 0) { showToast('Tidak ada data pada rentang tanggal ini'); return; }
     const range = reportDateRange();
+    if (!range) return;
+    const rows = reportRows(range);
+    if (rows.length === 0) { showToast('Tidak ada data pada rentang tanggal ini'); return; }
     const dateLabel = range.start || range.end ? `${range.start || 'awal'}_sampai_${range.end || 'akhir'}` : todayStr();
     const title = `Laporan WA Follow-Up — ${range.start || range.end ? `${range.start || 'awal'} s.d. ${range.end || 'akhir'}` : todayStr()}`;
     const excelHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
       <style>body{font-family:Arial,sans-serif}h1{font-size:18px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #999;padding:6px;text-align:left;vertical-align:top}th{background:#1C2B3A;color:#fff}</style>
-      </head><body><h1>${title}</h1>${reportTableHtml()}</body></html>`;
+      </head><body><h1>${title}</h1>${reportTableHtml(rows)}</body></html>`;
     const blob = new Blob(['\ufeff', excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1772,15 +1982,16 @@
     showToast('File Excel diunduh');
   }
   function exportDailyPdf() {
-    const rows = reportRows();
-    if (rows.length === 0) { showToast('Tidak ada data pada rentang tanggal ini'); return; }
     const range = reportDateRange();
+    if (!range) return;
+    const rows = reportRows(range);
+    if (rows.length === 0) { showToast('Tidak ada data pada rentang tanggal ini'); return; }
     const title = `Laporan WA Follow-Up — ${range.start || range.end ? `${range.start || 'awal'} s.d. ${range.end || 'akhir'}` : todayStr()}`;
     const win = window.open('', '_blank', 'noopener,noreferrer');
     if (!win) { showToast('Izinkan pop-up untuk mencetak laporan'); return; }
     win.document.write(`<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>${title}</title>
       <style>@page{size:A4 landscape;margin:12mm}body{font-family:Arial,sans-serif;color:#222}h1{font-size:19px;margin:0 0 5px}p{font-size:11px;color:#555;margin:0 0 14px}table{border-collapse:collapse;width:100%;font-size:9px}th,td{border:1px solid #999;padding:5px;text-align:left;vertical-align:top}th{background:#1C2B3A;color:#fff}tr:nth-child(even){background:#f5f5f5}</style>
-      </head><body><h1>${title}</h1><p>Total ${rows.length} lead</p>${reportTableHtml()}</body></html>`);
+      </head><body><h1>${title}</h1><p>Total ${rows.length} lead</p>${reportTableHtml(rows)}</body></html>`);
     win.document.close();
     win.focus();
     setTimeout(() => win.print(), 250);
@@ -1911,10 +2122,12 @@
     if (pendingImportRows.length === 0) return;
     const toInsert = [];
     let skipped = 0;
+    const seenPhones = new Set();
     pendingImportRows.forEach(r => {
       if (!r.validPhone) { skipped++; return; }
-      if (findDuplicate(r.telp)) { skipped++; return; }
-      toInsert.push({ ...r, archived: false });
+      if (findDuplicate(r.telp) || seenPhones.has(r.telp)) { skipped++; return; }
+      seenPhones.add(r.telp);
+      toInsert.push({ nama: r.nama, telp: r.telp, tanggal: r.tanggal, status: r.status, unit: r.unit, archived: false });
     });
     if (toInsert.length > 0) {
       const { error } = await sb.from(TABLE).insert(toInsert);
